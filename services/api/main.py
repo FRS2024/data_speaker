@@ -12,10 +12,14 @@ from typing import Any, Dict, List, Optional
 
 from fastapi import Depends, FastAPI, File, HTTPException, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from sqlmodel import Session, select
 
+from services.api.agent.orchestrator import agent_orchestrator
 from services.api.database import create_db_and_tables, get_db_session
 from services.api.models import (
+    ChatRequest,
+    ChatTurnResponse,
     CodeExecutionRequest,
     CodeExecutionResponse,
     DataFrameProfile,
@@ -218,3 +222,43 @@ async def reset_session_sandbox(
     sandbox = session_service.get_or_create_sandbox_client(session_id)
     await asyncio.to_thread(sandbox.reset)
     return {"status": "reset", "session_id": session_id}
+
+
+@app.post("/api/v1/sessions/{session_id}/chat", tags=["Agent"])
+async def chat_with_data(
+    session_id: str,
+    request: ChatRequest,
+    db: Session = Depends(get_db_session),
+):
+    """
+    Autonomous AI Analyst turn.
+    - If stream=True (default): Real-time Server-Sent Events (tokens, code, execution status, stdout, charts, reflexion).
+    - If stream=False: Synchronous unified JSON response.
+    """
+    session_obj = session_service.get_session(db, session_id)
+    if not session_obj:
+        raise HTTPException(status_code=404, detail=f"Session '{session_id}' not found")
+
+    if request.stream:
+        return StreamingResponse(
+            agent_orchestrator.run_chat_stream(
+                db=db,
+                session_id=session_id,
+                user_prompt=request.prompt,
+                max_attempts=request.max_attempts,
+            ),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no",
+            },
+        )
+
+    response_data = await agent_orchestrator.run_chat_sync(
+        db=db,
+        session_id=session_id,
+        user_prompt=request.prompt,
+        max_attempts=request.max_attempts,
+    )
+    return response_data

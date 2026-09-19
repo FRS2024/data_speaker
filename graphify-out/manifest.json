@@ -42,9 +42,9 @@
     "semantic_hash": ""
   },
   "pyproject.toml": {
-    "mtime": 1789837154.499601,
-    "seen": 1789838461.9894319,
-    "ast_hash": "f2c72d532d05b5cf01019c9b85cf8c8b",
+    "mtime": 1789838993.4806662,
+    "seen": 1789839251.0265677,
+    "ast_hash": "ff802727d84377156012b219db57e861",
     "semantic_hash": ""
   },
   "services/api/__init__.py": {
@@ -54,9 +54,9 @@
     "semantic_hash": ""
   },
   "services/api/pyproject.toml": {
-    "mtime": 1789837159.153704,
-    "seen": 1789838461.9904435,
-    "ast_hash": "86b71bfc84685ded651652b89151d8f7",
+    "mtime": 1789838998.1109056,
+    "seen": 1789839251.0265677,
+    "ast_hash": "2aeef815c9b38a8f7242a4aff6283c5b",
     "semantic_hash": ""
   },
   "services/sandbox/__init__.py": {
@@ -138,15 +138,15 @@
     "semantic_hash": ""
   },
   "services/api/main.py": {
-    "mtime": 1789837392.7153082,
-    "seen": 1789838461.9894319,
-    "ast_hash": "d876dace45818259e7f7186a94023ca2",
+    "mtime": 1789839091.9443846,
+    "seen": 1789839251.0265677,
+    "ast_hash": "3cd6daf2dff2a38c9d87df3209ffba90",
     "semantic_hash": ""
   },
   "services/api/models.py": {
-    "mtime": 1789838054.0093186,
-    "seen": 1789838461.9904435,
-    "ast_hash": "9fc57bbcac61e19ea46ae65eccb55cc3",
+    "mtime": 1789839074.0001047,
+    "seen": 1789839251.0265677,
+    "ast_hash": "c5d382a84b545027568bf0093e06397c",
     "semantic_hash": ""
   },
   "services/api/profiler.py": {
@@ -171,6 +171,30 @@
     "mtime": 1789838058.5740614,
     "seen": 1789838461.9904435,
     "ast_hash": "ee5f99033734d23389958f39e863d0d1",
+    "semantic_hash": ""
+  },
+  "services/api/agent/orchestrator.py": {
+    "mtime": 1789839063.0597665,
+    "seen": 1789839251.0265677,
+    "ast_hash": "48cfc6cde8b5b018dbd3a873342e5d1d",
+    "semantic_hash": ""
+  },
+  "services/api/agent/prompts.py": {
+    "mtime": 1789839023.280049,
+    "seen": 1789839251.0265677,
+    "ast_hash": "75a7da2f6e4173555870872ec44b35ae",
+    "semantic_hash": ""
+  },
+  "services/api/agent/providers.py": {
+    "mtime": 1789839198.5807195,
+    "seen": 1789839251.0265677,
+    "ast_hash": "e1c17a0f1a4f48f5dbe4fffeb58a017d",
+    "semantic_hash": ""
+  },
+  "tests/test_agent_orchestrator.py": {
+    "mtime": 1789839101.3434358,
+    "seen": 1789839251.0265677,
+    "ast_hash": "b5e1f02492c9309d9552b89726ca38be",
     "semantic_hash": ""
   }
 }

@@ -167,3 +167,26 @@ class CodeExecutionResponse(BaseModel):
     duration_ms: int
     has_mutated_dataframe: bool = False
     df_shape: Optional[Tuple[int, int]] = None
+
+
+class ChatRequest(BaseModel):
+    prompt: str
+    stream: bool = True
+    max_attempts: int = 3
+
+
+class ChatTurnResponse(BaseModel):
+    status: str
+    turn_id: Optional[str] = None
+    explanation: Optional[str] = None
+    code: Optional[str] = None
+    stdout: Optional[str] = None
+    stderr: Optional[str] = None
+    figures: List[Dict[str, Any]] = []
+    reflexion_count: int = 0
+    duration_ms: int = 0
+    has_mutated_df: bool = False
+    df_shape: Optional[Tuple[int, int]] = None
+    active_version: str = "df_v0"
+    error: Optional[str] = None
+    detail: Optional[str] = None
