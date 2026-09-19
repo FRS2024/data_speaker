@@ -1,0 +1,44 @@
+{
+  ".agents/rules/graphify.md": {
+    "mtime": 1789827121.3268344,
+    "seen": 1789827723.676949,
+    "ast_hash": "a0e4d192b9e2e17256124dbfc8e24e6a",
+    "semantic_hash": ""
+  },
+  ".agents/workflows/graphify.md": {
+    "mtime": 1789827121.3268344,
+    "seen": 1789827723.676949,
+    "ast_hash": "a831cf3669f1e6ab85d8a80ebe655f99",
+    "semantic_hash": ""
+  },
+  "PRD.md": {
+    "mtime": 1789827676.9270103,
+    "seen": 1789827723.676949,
+    "ast_hash": "543a6772c06f8cae1d5f4695cf5597d3",
+    "semantic_hash": ""
+  },
+  "SYSTEM_ARCHITECTURE.md": {
+    "mtime": 1789827710.0551238,
+    "seen": 1789827723.676949,
+    "ast_hash": "326cb94f824042cc180723fa69715bcc",
+    "semantic_hash": ""
+  },
+  "SYSTEM_DESIGN.md": {
+    "mtime": 1789827714.1221068,
+    "seen": 1789827723.676949,
+    "ast_hash": "a1ea9bacbd6d10cd8dffe334d8644de3",
+    "semantic_hash": ""
+  },
+  "TRD.md": {
+    "mtime": 1789827692.4437122,
+    "seen": 1789827723.676949,
+    "ast_hash": "0f20df299ce7262efd0fbbffeac9fca4",
+    "semantic_hash": ""
+  },
+  "project_overview.md": {
+    "mtime": 1789818730.9737437,
+    "seen": 1789827723.676949,
+    "ast_hash": "ae6c841cfad95ebb681a3d58173dd72a",
+    "semantic_hash": ""
+  }
+}
