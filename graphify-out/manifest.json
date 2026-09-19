@@ -40,5 +40,137 @@
     "seen": 1789827723.676949,
     "ast_hash": "ae6c841cfad95ebb681a3d58173dd72a",
     "semantic_hash": ""
+  },
+  "pyproject.toml": {
+    "mtime": 1789837154.499601,
+    "seen": 1789838461.9894319,
+    "ast_hash": "f2c72d532d05b5cf01019c9b85cf8c8b",
+    "semantic_hash": ""
+  },
+  "services/api/__init__.py": {
+    "mtime": 1789829925.513304,
+    "seen": 1789831251.0276437,
+    "ast_hash": "e5f39b8d60abb892245721a169d64801",
+    "semantic_hash": ""
+  },
+  "services/api/pyproject.toml": {
+    "mtime": 1789837159.153704,
+    "seen": 1789838461.9904435,
+    "ast_hash": "86b71bfc84685ded651652b89151d8f7",
+    "semantic_hash": ""
+  },
+  "services/sandbox/__init__.py": {
+    "mtime": 1789829869.8726883,
+    "seen": 1789831251.0276437,
+    "ast_hash": "4bba6603bd905c079e19e043c58c7737",
+    "semantic_hash": ""
+  },
+  "services/sandbox/cli.py": {
+    "mtime": 1789829906.9951398,
+    "seen": 1789831251.0276437,
+    "ast_hash": "a5efd4b13aff9f28858ddd18a318b79b",
+    "semantic_hash": ""
+  },
+  "services/sandbox/client.py": {
+    "mtime": 1789837358.097418,
+    "seen": 1789838461.9904435,
+    "ast_hash": "868758f556ea44f4f23652d615c9c8f4",
+    "semantic_hash": ""
+  },
+  "services/sandbox/pyproject.toml": {
+    "mtime": 1789830406.3946285,
+    "seen": 1789831251.0276437,
+    "ast_hash": "1411e43559b53b70917095342585708d",
+    "semantic_hash": ""
+  },
+  "services/sandbox/runner.py": {
+    "mtime": 1789830611.073154,
+    "seen": 1789831251.0276437,
+    "ast_hash": "247642451c186d05630342620e1edb9d",
+    "semantic_hash": ""
+  },
+  "services/sandbox/server.py": {
+    "mtime": 1789829892.7955532,
+    "seen": 1789831251.0276437,
+    "ast_hash": "3556aae7d25705a5ac95349102f7e9cc",
+    "semantic_hash": ""
+  },
+  "tests/test_live_docker.py": {
+    "mtime": 1789830994.1229894,
+    "seen": 1789831251.0276437,
+    "ast_hash": "52c1289e7b94734be024e584ee5acdff",
+    "semantic_hash": ""
+  },
+  "tests/test_sandbox_runner.py": {
+    "mtime": 1789829940.740216,
+    "seen": 1789831251.0276437,
+    "ast_hash": "a301e94339b21367f4be5cdcc0a0a4c7",
+    "semantic_hash": ""
+  },
+  "apps/web/README.md": {
+    "mtime": 1789829931.6101162,
+    "seen": 1789831251.0276437,
+    "ast_hash": "87f685e0d302c8683bfc297633edd8c9",
+    "semantic_hash": ""
+  },
+  "docker-compose.yml": {
+    "mtime": 1789837290.2863905,
+    "seen": 1789838461.9904435,
+    "ast_hash": "913b04da8c685c33ca39cbd74c9df8b3",
+    "semantic_hash": ""
+  },
+  "services/api/README.md": {
+    "mtime": 1789830388.5747607,
+    "seen": 1789831251.0276437,
+    "ast_hash": "9c7315988ae22a875dadbabc2f0c4ed2",
+    "semantic_hash": ""
+  },
+  "services/sandbox/README.md": {
+    "mtime": 1789830383.8121178,
+    "seen": 1789831251.0276437,
+    "ast_hash": "a047a2ae997f67be1af6f54d41107f2c",
+    "semantic_hash": ""
+  },
+  "services/api/database.py": {
+    "mtime": 1789837234.0490053,
+    "seen": 1789838461.9894319,
+    "ast_hash": "729cce22cca0664c60514781cd1fe347",
+    "semantic_hash": ""
+  },
+  "services/api/main.py": {
+    "mtime": 1789837392.7153082,
+    "seen": 1789838461.9894319,
+    "ast_hash": "d876dace45818259e7f7186a94023ca2",
+    "semantic_hash": ""
+  },
+  "services/api/models.py": {
+    "mtime": 1789838054.0093186,
+    "seen": 1789838461.9904435,
+    "ast_hash": "9fc57bbcac61e19ea46ae65eccb55cc3",
+    "semantic_hash": ""
+  },
+  "services/api/profiler.py": {
+    "mtime": 1789837596.4169118,
+    "seen": 1789838461.9904435,
+    "ast_hash": "6b2da8a2d020d1d42b29edaf657b1851",
+    "semantic_hash": ""
+  },
+  "services/api/session_service.py": {
+    "mtime": 1789837379.297816,
+    "seen": 1789838461.9904435,
+    "ast_hash": "1908ebb251d04637c601c55f8cd6e1ba",
+    "semantic_hash": ""
+  },
+  "tests/test_api_ingestion.py": {
+    "mtime": 1789837602.3245573,
+    "seen": 1789838461.9904435,
+    "ast_hash": "f2d7740f747d866f27cc740cf35ba4be",
+    "semantic_hash": ""
+  },
+  "tests/test_profiler.py": {
+    "mtime": 1789838058.5740614,
+    "seen": 1789838461.9904435,
+    "ast_hash": "ee5f99033734d23389958f39e863d0d1",
+    "semantic_hash": ""
   }
 }

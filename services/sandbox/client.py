@@ -24,6 +24,10 @@ class SandboxClient:
         raise NotImplementedError
 
 
+# Backward-compatible alias
+BaseSandboxClient = SandboxClient
+
+
 class RemoteSandboxClient(SandboxClient):
     """HTTP client communicating with the containerized sandbox runner."""
 

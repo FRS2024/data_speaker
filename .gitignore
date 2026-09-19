@@ -49,4 +49,8 @@ Thumbs.db
 
 # Graphify internal cache (keep reports and graph specs)
 graphify-out/cache/
+graphify-out/20*/
 *.tmp
+
+# Local Runtime Data
+data/
