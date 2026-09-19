@@ -196,5 +196,95 @@
     "seen": 1789839251.0265677,
     "ast_hash": "b5e1f02492c9309d9552b89726ca38be",
     "semantic_hash": ""
+  },
+  "apps/web/next-env.d.ts": {
+    "mtime": 1789840851.03971,
+    "seen": 1789841272.694186,
+    "ast_hash": "da547da2ebeb322abd0257ae82d0f1bf",
+    "semantic_hash": ""
+  },
+  "apps/web/next.config.mjs": {
+    "mtime": 1789839678.5452232,
+    "seen": 1789841272.694186,
+    "ast_hash": "cc46c52702c94394f286b9bec27fe341",
+    "semantic_hash": ""
+  },
+  "apps/web/package.json": {
+    "mtime": 1789839662.2759073,
+    "seen": 1789841272.694186,
+    "ast_hash": "75232475dfcb3d961d5830f499f4a467",
+    "semantic_hash": ""
+  },
+  "apps/web/postcss.config.mjs": {
+    "mtime": 1789839682.9397788,
+    "seen": 1789841272.694186,
+    "ast_hash": "c735540bb63936a123bc867d950c9f69",
+    "semantic_hash": ""
+  },
+  "apps/web/src/app/layout.tsx": {
+    "mtime": 1789839769.337794,
+    "seen": 1789841272.694186,
+    "ast_hash": "43bf803336e0c22c5daf5179b71e7540",
+    "semantic_hash": ""
+  },
+  "apps/web/src/app/page.tsx": {
+    "mtime": 1789839778.4789135,
+    "seen": 1789841272.694186,
+    "ast_hash": "17a0bfeec27fc16e965a94bd8f113ad9",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/ChatPanel.tsx": {
+    "mtime": 1789839735.004316,
+    "seen": 1789841272.694186,
+    "ast_hash": "98dd3f6ba23ea63cd4bd5a28499debda",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/CodeConsole.tsx": {
+    "mtime": 1789839758.09148,
+    "seen": 1789841272.694186,
+    "ast_hash": "5401a8359525ecc0841eba59d05a4fad",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/FileUploadModal.tsx": {
+    "mtime": 1789839721.9893699,
+    "seen": 1789841272.694186,
+    "ast_hash": "84b60776ebee63a42e40c4b639fe7094",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/Navbar.tsx": {
+    "mtime": 1789839715.1414309,
+    "seen": 1789841272.694186,
+    "ast_hash": "6216c8c0620a12c8aa762750047763d4",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/PlotlyStudio.tsx": {
+    "mtime": 1789839750.9714868,
+    "seen": 1789841272.694186,
+    "ast_hash": "3f9c6f7a4303daecbf14033d8f4ec1a1",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/SchemaViewer.tsx": {
+    "mtime": 1789839743.6669803,
+    "seen": 1789841272.694186,
+    "ast_hash": "68c37635652f6abf64d6d8f00f7ec006",
+    "semantic_hash": ""
+  },
+  "apps/web/src/hooks/useChatStream.ts": {
+    "mtime": 1789839708.6287205,
+    "seen": 1789841272.694186,
+    "ast_hash": "fe6efefd01b11301f70ff24dadc6d8c0",
+    "semantic_hash": ""
+  },
+  "apps/web/tailwind.config.ts": {
+    "mtime": 1789839687.317531,
+    "seen": 1789841272.694186,
+    "ast_hash": "cef3e2b47feb37e068a39338a05a1f44",
+    "semantic_hash": ""
+  },
+  "apps/web/tsconfig.json": {
+    "mtime": 1789839672.6490204,
+    "seen": 1789841272.694186,
+    "ast_hash": "492fe1df794fccc27c69bfa6dc017b80",
+    "semantic_hash": ""
   }
 }

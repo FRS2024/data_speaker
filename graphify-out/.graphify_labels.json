@@ -5,7 +5,7 @@
   "3": "PRODUCT REQUIREMENTS DOCUMENT (PRD)",
   "4": "main.py",
   "5": "runner.py",
-  "6": "orchestrator.py",
+  "6": "BaseLLMProvider",
   "7": "SandboxClient",
   "8": "profiler.py",
   "9": "SandboxRunner",
@@ -20,5 +20,17 @@
   "18": "sandbox/README.md",
   "19": "data-speaker",
   "20": "data-speaker-api",
-  "21": "sandbox-runner"
+  "21": "sandbox-runner",
+  "22": "package.json",
+  "23": "page.tsx",
+  "24": "session_service.py",
+  "25": "Session",
+  "26": "compilerOptions",
+  "27": "DataFrameProfile",
+  "28": "get_session",
+  "29": ".run_chat_stream",
+  "30": "next.config.mjs",
+  "31": "next-env.d.ts",
+  "32": "get_db_session",
+  "33": "postcss.config.mjs"
 }
