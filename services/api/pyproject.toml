@@ -1,0 +1,24 @@
+[project]
+name = "data-speaker-api"
+version = "0.1.0"
+description = "API Gateway, Schema Profiling & Orchestration for data_speaker"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "fastapi>=0.111.0",
+    "uvicorn[standard]>=0.30.0",
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.2.0",
+    "httpx>=0.27.0",
+    "python-multipart>=0.0.9",
+    "pandas>=2.2.0",
+    "polars>=0.20.0",
+    "pyarrow>=16.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]

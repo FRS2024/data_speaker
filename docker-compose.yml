@@ -1,0 +1,27 @@
+services:
+  sandbox:
+    build:
+      context: ./services/sandbox
+      dockerfile: Dockerfile
+    container_name: data_speaker_sandbox
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - SANDBOX_TIMEOUT=60
+      - SANDBOX_HOST=0.0.0.0
+      - SANDBOX_PORT=8000
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+    cap_drop:
+      - ALL
+    networks:
+      - sandbox_net
+
+networks:
+  sandbox_net:
+    driver: bridge

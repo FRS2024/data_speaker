@@ -1,0 +1,24 @@
+[project]
+name = "data-speaker"
+version = "0.1.0"
+description = "Conversational Data Analysis Platform"
+readme = "project_overview.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "pydantic>=2.7.0",
+    "httpx>=0.27.0",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[tool.uv.workspace]
+members = [
+    "services/sandbox",
+    "services/api",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
