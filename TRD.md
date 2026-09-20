@@ -296,7 +296,7 @@ class CodeExecutionResult(BaseModel):
 | **Elevation of Privilege** | Container escape to host kernel | Sandboxes executed inside **gVisor (`runsc`)** application kernels or **Firecracker MicroVMs**; non-root user (`uid 1000`). |
 
 ### 3.4 Observability & Telemetry Standards
-* **Distributed Tracing:** OpenTelemetry instrumentation injected across all microservices (Next.js BFF → FastAPI Gateway → Agent Orchestrator → Sandbox Daemon). Traces exported to Jaeger / Datadog.
+* **Distributed Tracing:** OpenTelemetry instrumentation injected across all microservices (TanStack Web Client → FastAPI Gateway → Agent Orchestrator → Sandbox Daemon). Traces exported to Jaeger / Datadog.
 * **Metrics:** Prometheus endpoint scraping:
   * `sandbox_pool_idle_count` (Gauge)
   * `sandbox_acquisition_latency_ms` (Histogram)

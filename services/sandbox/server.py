@@ -88,6 +88,10 @@ def execute_code(request: ExecuteRequest):
     )
 
 
+class CheckpointFileRequest(BaseModel):
+    file_path: str = Field(..., description="Path to checkpoint parquet file")
+
+
 @app.post("/reset")
 def reset_sandbox():
     if runner is None:
@@ -101,6 +105,26 @@ def get_sandbox_state():
     if runner is None:
         raise HTTPException(status_code=503, detail="Sandbox runner not initialized")
     return runner.get_state()
+
+
+@app.post("/checkpoint/save")
+def save_checkpoint(request: CheckpointFileRequest):
+    if runner is None:
+        raise HTTPException(status_code=503, detail="Sandbox runner not initialized")
+    try:
+        return runner.save_checkpoint(request.file_path)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/checkpoint/restore")
+def restore_checkpoint(request: CheckpointFileRequest):
+    if runner is None:
+        raise HTTPException(status_code=503, detail="Sandbox runner not initialized")
+    try:
+        return runner.load_checkpoint(request.file_path)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 if __name__ == "__main__":

@@ -23,6 +23,12 @@ class SandboxClient:
     def get_state(self) -> Dict[str, Any]:
         raise NotImplementedError
 
+    def save_checkpoint(self, file_path: str) -> Dict[str, Any]:
+        raise NotImplementedError
+
+    def restore_checkpoint(self, file_path: str) -> Dict[str, Any]:
+        raise NotImplementedError
+
 
 # Backward-compatible alias
 BaseSandboxClient = SandboxClient
@@ -65,6 +71,16 @@ class RemoteSandboxClient(SandboxClient):
         resp.raise_for_status()
         return resp.json()
 
+    def save_checkpoint(self, file_path: str) -> Dict[str, Any]:
+        resp = self.client.post("/checkpoint/save", json={"file_path": file_path})
+        resp.raise_for_status()
+        return resp.json()
+
+    def restore_checkpoint(self, file_path: str) -> Dict[str, Any]:
+        resp = self.client.post("/checkpoint/restore", json={"file_path": file_path})
+        resp.raise_for_status()
+        return resp.json()
+
 
 class LocalSandboxClient(SandboxClient):
     """In-process sandbox client for rapid local testing without container dependencies."""
@@ -89,3 +105,9 @@ class LocalSandboxClient(SandboxClient):
 
     def get_state(self) -> Dict[str, Any]:
         return self.runner.get_state()
+
+    def save_checkpoint(self, file_path: str) -> Dict[str, Any]:
+        return self.runner.save_checkpoint(file_path=file_path)
+
+    def restore_checkpoint(self, file_path: str) -> Dict[str, Any]:
+        return self.runner.load_checkpoint(file_path=file_path)

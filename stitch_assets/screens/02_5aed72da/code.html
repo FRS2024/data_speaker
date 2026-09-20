@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-background":"#e5e2e3","on-surface":"#e5e2e3","tertiary-fixed":"#68fcbf","surface-container":"#201f20","surface-container-highest":"#353436","secondary-fixed":"#eaddff","inverse-surface":"#e5e2e3","surface":"#131314","primary-fixed":"#d8e2ff","tertiary-container":"#01bf87","surface-container-low":"#1c1b1c","outline":"#8d909d","tertiary-fixed-dim":"#45dfa4","error-container":"#93000a","tertiary":"#45dfa4","on-secondary":"#3f018d","inverse-primary":"#2b5caf","on-error-container":"#ffdad6","on-surface-variant":"#c3c6d3","surface-variant":"#353436","on-primary-fixed-variant":"#004395","secondary":"#d2bbff","surface-container-high":"#2a2a2b","surface-dim":"#131314","surface-bright":"#39393a","on-tertiary":"#003825","inverse-on-surface":"#313031","on-primary-container":"#003a83","on-tertiary-fixed":"#002114","primary-container":"#7ca7ff","surface-tint":"#aec6ff","on-secondary-container":"#c6aaff","background":"#131314","on-tertiary-container":"#00462f","on-error":"#690005","outline-variant":"#434751","error":"#ffb4ab","primary":"#aec6ff","surface-container-lowest":"#0e0e0f","on-secondary-fixed":"#25005a","on-primary":"#002e6a","primary-fixed-dim":"#aec6ff","secondary-container":"#582ca7","on-primary-fixed":"#001a42","on-secondary-fixed-variant":"#5629a4","secondary-fixed-dim":"#d2bbff","on-tertiary-fixed-variant":"#005137"},borderRadius:{DEFAULT:"1rem",lg:"2rem",xl:"3rem",full:"9999px"},spacing:{"space-sm":"0.5rem",gutter:"1rem","gutter-lg":"1.5rem","space-2xl":"3rem","space-xs":"0.25rem","space-lg":"1.5rem","space-md":"1rem",margin:"1rem","space-xl":"2rem","margin-lg":"2rem","margin-md":"1.5rem"},fontFamily:{"body-md":["Geist"],"headline-lg-mobile":["Geist"],"headline-lg":["Geist"],"display-hero-mobile":["Geist"],"code-tabular":["JetBrains Mono"],"headline-md":["Geist"],"body-lg":["Geist"],"body-sm":["Geist"],"label-caps":["JetBrains Mono"],"display-hero":["Geist"]},fontSize:{"body-md":["14px",{lineHeight:"22px",letterSpacing:"0em",fontWeight:"400"}],"headline-lg-mobile":["22px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"500"}],"headline-lg":["28px",{lineHeight:"36px",letterSpacing:"-0.02em",fontWeight:"500"}],"display-hero-mobile":["30px",{lineHeight:"38px",letterSpacing:"-0.02em",fontWeight:"500"}],"code-tabular":["13px",{lineHeight:"20px",letterSpacing:"0em",fontWeight:"400"}],"headline-md":["20px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"500"}],"body-lg":["16px",{lineHeight:"26px",letterSpacing:"-0.005em",fontWeight:"400"}],"body-sm":["12px",{lineHeight:"18px",letterSpacing:"0.01em",fontWeight:"400"}],"label-caps":["11px",{lineHeight:"16px",letterSpacing:"0.06em",fontWeight:"500"}],"display-hero":["44px",{lineHeight:"52px",letterSpacing:"-0.03em",fontWeight:"500"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-low z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="h-16 px-space-md flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="Gemini Ambient Spark Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Uolhs4mfFVscy9lfJTNQDPjgs7b8iplhHBiLo687zvd2FadNfYY4ppNsodRLoYwCPDuLXQLPz-ZMuMUNn4euQTK0lfySIuFj1SBGzBKWRig0TI1iHz0fme7L6mYXRNO_mwqeW8Oh5gTl7eDG_9PfXb9E744gDSiQFJhKRgUV6wa9Aw8VMsjJx-FRH61_AKLrrw30Ew4fhar4Qzm6kPlGM2QI7i7loYfObVAGkYoF5cy8hEcTtKHtFAcxM"/><span class="font-headline-md text-headline-md text-on-surface">Gemini Data</span></div><button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[18px]">left_panel_close</span></button></div><div class="px-space-md py-space-xs"><div class="p-space-xs bg-surface-container rounded-full flex items-center gap-space-xs"><a class="flex-1 py-1 px-space-xs text-center rounded-full text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-colors" data-path="conversational-canvas" href="#">Chat AI</a><a class="flex-1 py-1 px-space-xs text-center rounded-full text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-colors" data-path="sql-and-deep-query" href="#">SQL Lab</a></div></div><div class="px-space-md py-space-sm"><button class="w-full py-space-sm px-space-md rounded-full bg-surface-container-high hover:bg-surface-container-highest text-primary font-body-md text-body-md flex items-center justify-center gap-space-sm transition-all shadow-[0_0_16px_rgba(124,167,255,0.08)]" type="button"><span class="material-symbols-outlined text-[20px]">add</span><span>New Session</span></button></div><div class="px-space-md py-space-xs"><button class="w-full py-space-xs px-space-md rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface flex items-center justify-between font-body-sm text-body-sm transition-colors" type="button"><span>Search analysis...</span><span class="material-symbols-outlined text-[16px]">search</span></button></div><div class="px-space-md mt-space-md flex flex-col gap-space-xs"><span class="font-label-caps text-label-caps uppercase tracking-wider text-outline px-space-xs">Workspaces</span><nav class="flex flex-col gap-space-xs" data-active-classes="bg-surface-container-high text-primary font-medium"><a class="flex items-center px-space-sm py-space-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="conversational-canvas" href="#"><span class="truncate">Active Analytics</span></a><a class="flex items-center px-space-sm py-space-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="sql-and-deep-query" href="#"><span class="truncate">SQL &amp; Deep Query</span></a><a class="flex items-center px-space-sm py-space-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="data-warehouses" href="#"><span class="truncate">Data Warehouses</span></a></nav></div><div class="px-space-md mt-space-md flex flex-col gap-space-xs"><span class="font-label-caps text-label-caps uppercase tracking-wider text-outline px-space-xs">Recent Sessions</span><div class="flex flex-col gap-space-xs"><a class="px-space-sm py-space-xs rounded text-body-sm font-body-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface truncate transition-colors" data-path="conversational-canvas" href="#">Q3 Revenue Cohort Analysis</a><a class="px-space-sm py-space-xs rounded text-body-sm font-body-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface truncate transition-colors" data-path="sql-and-deep-query" href="#">Customer Churn Prediction</a><a class="px-space-sm py-space-xs rounded text-body-sm font-body-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface truncate transition-colors" data-path="sql-and-deep-query" href="#">Real-time Clickstream Logs</a></div></div></div><div class="p-space-md bg-surface-container-lowest flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3oGy_JtI9L39Rh0ZQjW6_1atfTh0851i8WrMZSIJqy8RVSYn29DT7-4qKnUIEi6YiPRaOuE5WMhwYJb314V2St3KPtSarppuKUxR0-JLtyyHgszshSv5QwOspA9Tfq9D-Zwh1xyvgbKaXdN-9E6E5PAjSPVslSm6lvo-22sWNYfikdyoavQb8ZRxeUloQTrwEGwt9F-GmhCfIJ5WzSWwrkGdh8Py13KiZvH3LxqTWDI72LoxsaP8i"/><div class="flex flex-col"><span class="font-body-md text-body-md text-on-surface truncate leading-tight">Fares</span><span class="font-label-caps text-label-caps text-tertiary uppercase">Pro Analyst</span></div></div><div class="flex items-center gap-space-xs"><button class="p-space-xs rounded-full text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[18px]">settings</span></button></div></div></aside><div class="pl-64 flex flex-col min-h-screen"><header class="fixed top-0 left-64 right-0 h-16 bg-surface/80 backdrop-blur-xl z-40 px-space-lg flex items-center justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-sm font-body-sm text-body-sm text-on-surface-variant"><span class="hover:text-on-surface transition-colors cursor-pointer">Sessions</span><span class="text-outline">/</span><span class="text-on-surface font-body-md text-body-md">Q3 Revenue Cohort Analysis</span></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container font-code-tabular text-code-tabular text-tertiary"><span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span><span>BigQuery Connected • 14ms</span></div><nav class="flex items-center gap-space-md" data-active-classes="text-primary font-medium"><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="documentation" href="#">Docs</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="workspace-settings" href="#">Integrations</a></nav><div class="flex items-center gap-space-xs"><button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span></button><button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">share</span></button></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3oGy_JtI9L39Rh0ZQjW6_1atfTh0851i8WrMZSIJqy8RVSYn29DT7-4qKnUIEi6YiPRaOuE5WMhwYJb314V2St3KPtSarppuKUxR0-JLtyyHgszshSv5QwOspA9Tfq9D-Zwh1xyvgbKaXdN-9E6E5PAjSPVslSm6lvo-22sWNYfikdyoavQb8ZRxeUloQTrwEGwt9F-GmhCfIJ5WzSWwrkGdh8Py13KiZvH3LxqTWDI72LoxsaP8i"/></div></header><main class="w-full pt-16 bg-surface flex-1 flex flex-col"><div class="flex flex-col w-full">
+<div class="relative w-full flex-1 flex overflow-hidden">
+<!-- Underlay / Left Main: SQL Lab & Data Canvas Workspace (Partially Dimmed / Interactive) -->
+<div class="flex-1 flex flex-col min-w-0 pr-0 lg:pr-[540px] transition-all duration-300">
+<!-- Top Action Ribbon for SQL Workspace -->
+<div class="h-14 px-space-lg bg-surface-container-low flex items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="flex items-center gap-space-xs bg-surface-container px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined text-primary text-[18px]">terminal</span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-on-surface">production_bi.revenue_cohorts_v4.sql</span>
+</div>
+<span class="font-code-tabular text-code-tabular text-outline">Modified 3m ago</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="px-space-md py-1.5 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-container-highest text-body-sm font-body-sm flex items-center gap-space-xs transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px] text-tertiary">save</span>
+<span>Commit Query</span>
+</button>
+<button class="px-space-md py-1.5 rounded-full bg-primary-container text-on-primary-container hover:brightness-110 text-body-sm font-body-sm flex items-center gap-space-xs transition-all shadow-md" type="button">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+<span class="font-medium">Run (⌘ + ↵)</span>
+</button>
+<!-- Trigger indicator button to reopen drawer if collapsed -->
+<button class="px-space-md py-1.5 rounded-full bg-surface-container-highest text-primary text-body-sm font-body-sm flex items-center gap-space-xs transition-all shadow-sm ring-1 ring-primary/20" id="drawerToggleBtn" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary animate-spin" style="animation-duration: 6s;">auto_awesome</span>
+<span class="font-medium">Insights Live</span>
+<span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
+</button>
+</div>
+</div>
+<!-- SQL Script & Visual Workspace Canvas -->
+<div class="flex-1 p-space-lg flex flex-col gap-space-lg bg-surface overflow-y-auto opacity-75 lg:opacity-85 pointer-events-none lg:pointer-events-auto">
+<!-- Code Editor Surface Mock -->
+<div class="bg-surface-container-low rounded-DEFAULT p-space-md shadow-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between font-label-caps text-label-caps text-outline pb-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-outline-variant"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-outline-variant"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-outline-variant"></span>
+<span class="ml-2 uppercase tracking-widest text-on-surface-variant">SQL Synthesizer</span>
+</div>
+<div class="flex items-center gap-space-md">
+<span class="text-tertiary">Cost: $0.02 est.</span>
+<span>Bytes Scanned: 24.8 GB</span>
+</div>
+</div>
+<pre class="font-code-tabular text-code-tabular text-on-surface leading-relaxed overflow-x-auto p-space-sm bg-surface-container-lowest rounded"><code><span class="text-secondary">WITH</span> cohort_base <span class="text-secondary">AS</span> (
+  <span class="text-secondary">SELECT</span> 
+    DATE_TRUNC(created_at, MONTH) <span class="text-secondary">AS</span> cohort_month,
+    account_id,
+    tier,
+    SUM(mrr_amount) <span class="text-secondary">AS</span> total_revenue,
+    status
+  <span class="text-secondary">FROM</span> `corp-lakehouse-analytics.production_lake.fact_subscriptions`
+  <span class="text-secondary">WHERE</span> created_at &gt;= <span class="text-tertiary">'2024-01-01'</span>
+  <span class="text-secondary">GROUP BY</span> <span class="text-primary-fixed">1, 2, 3, 5</span>
+)
+<span class="text-secondary">SELECT</span> cohort_month, tier, <span class="text-primary">COUNT</span>(<span class="text-secondary">DISTINCT</span> account_id) <span class="text-secondary">AS</span> active_accounts,
+       <span class="text-primary">SUM</span>(total_revenue) <span class="text-secondary">AS</span> net_mrr
+<span class="text-secondary">FROM</span> cohort_base
+<span class="text-secondary">GROUP BY</span> <span class="text-primary-fixed">1, 2</span> <span class="text-secondary">ORDER BY</span> <span class="text-primary-fixed">1 DESC</span>;</code></pre>
+</div>
+<!-- Query Execution Results Grid (Mock Table) -->
+<div class="bg-surface-container-low rounded-DEFAULT p-space-md shadow-md flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-md text-headline-md text-on-surface">Execution Results</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-tertiary font-code-tabular text-body-sm">4,812 rows • 182ms</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="p-1.5 rounded bg-surface-container text-on-surface-variant hover:text-on-surface" type="button"><span class="material-symbols-outlined text-[18px]">download</span></button>
+<button class="p-1.5 rounded bg-surface-container text-on-surface-variant hover:text-on-surface" type="button"><span class="material-symbols-outlined text-[18px]">table_chart</span></button>
+<button class="p-1.5 rounded bg-surface-container text-on-surface-variant hover:text-on-surface" type="button"><span class="material-symbols-outlined text-[18px]">bar_chart</span></button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-code-tabular text-code-tabular">
+<thead>
+<tr class="bg-surface-container text-on-surface-variant">
+<th class="p-space-sm font-medium">cohort_month</th>
+<th class="p-space-sm font-medium">tier</th>
+<th class="p-space-sm font-medium">active_accounts</th>
+<th class="p-space-sm font-medium">net_mrr ($)</th>
+<th class="p-space-sm font-medium">status_flag</th>
+</tr>
+</thead>
+<tbody class="divide-y-0 text-on-surface">
+<tr class="bg-surface-container-lowest/50 hover:bg-surface-container transition-colors">
+<td class="p-space-sm">2024-03-01</td>
+<td class="p-space-sm">Enterprise</td>
+<td class="p-space-sm">1,248</td>
+<td class="p-space-sm text-tertiary font-medium">624,000.00</td>
+<td class="p-space-sm"><span class="px-2 py-0.5 rounded-full bg-surface-container text-tertiary">STABLE</span></td>
+</tr>
+<tr class="bg-error-container/20 hover:bg-error-container/30 transition-colors text-error">
+<td class="p-space-sm font-medium">2024-02-01</td>
+<td class="p-space-sm font-medium">Enterprise</td>
+<td class="p-space-sm">842</td>
+<td class="p-space-sm font-medium">421,000.00</td>
+<td class="p-space-sm"><span class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-caps">ANOMALY SPOTTED</span></td>
+</tr>
+<tr class="bg-surface-container-lowest/50 hover:bg-surface-container transition-colors">
+<td class="p-space-sm">2024-01-01</td>
+<td class="p-space-sm">Scale</td>
+<td class="p-space-sm">3,490</td>
+<td class="p-space-sm text-tertiary font-medium">872,500.00</td>
+<td class="p-space-sm"><span class="px-2 py-0.5 rounded-full bg-surface-container text-tertiary">STABLE</span></td>
+</tr>
+<tr class="bg-surface-container-lowest/50 hover:bg-surface-container transition-colors">
+<td class="p-space-sm">2024-01-01</td>
+<td class="p-space-sm">Starter</td>
+<td class="p-space-sm">8,912</td>
+<td class="p-space-sm text-tertiary font-medium">267,360.00</td>
+<td class="p-space-sm"><span class="px-2 py-0.5 rounded-full bg-surface-container text-tertiary">NORMAL</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Ambient Mini Visuals Bar Behind Drawer -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="p-space-md bg-surface-container-low rounded-DEFAULT flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-outline uppercase tracking-wider">Historical Pipeline Health</span>
+<span class="font-headline-md text-headline-md text-on-surface mt-1">99.82% SLA</span>
+</div>
+<div class="h-10 w-24">
+<svg class="w-full h-full text-tertiary" viewbox="0 0 100 40">
+<path d="M0,25 Q15,20 30,28 T60,18 T90,22 L100,15" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.5"></path>
+</svg>
+</div>
+</div>
+<div class="p-space-md bg-surface-container-low rounded-DEFAULT flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-outline uppercase tracking-wider">Active BigQuery Slots</span>
+<span class="font-headline-md text-headline-md text-primary mt-1">1,420 / 2,000</span>
+</div>
+<div class="h-10 w-24">
+<svg class="w-full h-full text-primary" viewbox="0 0 100 40">
+<path d="M0,35 Q20,30 40,25 T70,12 T95,10 L100,8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.5"></path>
+</svg>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT SLIDE-OVER DRAWER: Gemini AI Automated Insights & Anomalies -->
+<aside class="w-full lg:w-[540px] fixed lg:absolute right-0 top-0 bottom-0 z-30 bg-surface-container-low shadow-2xl flex flex-col justify-between overflow-hidden transition-transform duration-300" id="geminiDrawer">
+<!-- Ambient Glow Behind Header -->
+<div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-primary-container/10 blur-3xl pointer-events-none"></div>
+<div class="absolute top-48 -left-32 w-80 h-80 rounded-full bg-secondary-container/15 blur-3xl pointer-events-none"></div>
+<!-- Drawer Scrollable Content Container -->
+<div class="relative flex-1 overflow-y-auto p-space-lg flex flex-col gap-space-lg z-10">
+<!-- Drawer Header Section -->
+<div class="flex flex-col gap-space-sm pb-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-full bg-primary-container/20 flex items-center justify-center text-primary shadow-[0_0_16px_rgba(124,167,255,0.3)]">
+<span class="material-symbols-outlined text-[20px]">auto_awesome</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface leading-tight">Gemini AI Intelligence</span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-outline">Real-time Telemetry Scan: Complete (0.18s)</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="p-space-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-full transition-all" id="refreshAnalysisBtn" title="Rerun Detection Model" type="button">
+<span class="material-symbols-outlined text-[20px] active:rotate-180 transition-transform">refresh</span>
+</button>
+<button class="p-space-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-full transition-all" id="closeDrawerBtn" title="Close Drawer" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+</div>
+<!-- Quick Banner Badges -->
+<div class="flex flex-wrap items-center gap-space-xs mt-1">
+<span class="px-2.5 py-1 rounded-full bg-error-container text-on-error-container font-label-caps text-label-caps font-semibold flex items-center gap-1.5 shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></span>
+              3 Critical Anomalies Detected
+            </span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-caps text-label-caps flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-tertiary">check_circle</span>
+              dbt Lakehouse Validated
+            </span>
+</div>
+</div>
+<!-- Severity Summary Cards / KPI Bar -->
+<div class="grid grid-cols-3 gap-space-xs bg-surface-container-lowest p-space-xs rounded-DEFAULT">
+<!-- KPI 1 -->
+<div class="bg-surface-container p-space-sm rounded flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-outline uppercase">Anomaly Conf.</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-headline-md text-headline-md text-tertiary font-semibold">98.4%</span>
+</div>
+<div class="mt-1 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span class="font-body-sm text-body-sm text-tertiary-fixed-dim">High Sigma</span>
+</div>
+</div>
+<!-- KPI 2 -->
+<div class="bg-surface-container p-space-sm rounded flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-outline uppercase">MRR at Risk</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-headline-md text-headline-md text-error font-semibold">$42,650</span>
+</div>
+<div class="mt-1 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+<span class="font-body-sm text-body-sm text-error font-medium">+312% error spike</span>
+</div>
+</div>
+<!-- KPI 3 -->
+<div class="bg-surface-container p-space-sm rounded flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-outline uppercase">Target Cohort</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-headline-md text-headline-md text-primary truncate font-semibold">Feb '24</span>
+</div>
+<div class="mt-1 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Enterprise Tier</span>
+</div>
+</div>
+</div>
+<!-- Automated Anomaly Feed / Root-Cause Cards -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-outline font-semibold">Root-Cause Intelligence Stream</span>
+<span class="font-code-tabular text-body-sm text-primary cursor-pointer hover:underline">Group by Service</span>
+</div>
+<!-- Card 1: Critical Stripe Spike -->
+<div class="bg-surface-container p-space-md rounded-DEFAULT flex flex-col gap-space-md shadow-md hover:bg-surface-container-high transition-colors">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-7 h-7 rounded-full bg-error-container text-on-error-container flex items-center justify-center font-semibold">
+<span class="material-symbols-outlined text-[16px]">crisis_alert</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface font-medium leading-tight">Critical: Stripe Webhook Retry Storm Spike</span>
+<span class="font-code-tabular text-body-sm text-outline mt-0.5">fact_transactions • between 02:00 – 04:30 UTC</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-caps text-[10px] font-bold tracking-wider uppercase">P0 Impact</span>
+</div>
+<!-- Impact Metric Callout -->
+<div class="px-space-md py-space-xs rounded bg-surface-container-low flex items-center justify-between font-code-tabular text-body-sm">
+<span class="text-on-surface-variant">Transactional Error Delta:</span>
+<span class="text-error font-semibold">+312% vs 7-day avg</span>
+</div>
+<!-- Gemini AI Reasoning Bubble -->
+<div class="p-space-sm rounded bg-surface-container-lowest flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">neurology</span>
+<p class="font-body-sm text-body-sm text-on-surface leading-snug">
+                Gemini detected an exponential backoff failure during idempotent payment retries. 
+                <span class="text-error font-medium">842 active subscriptions</span> paused prematurely due to schema lock collision.
+              </p>
+</div>
+<!-- Visual Anomaly Sparkline / Histogram SVG -->
+<div class="bg-surface-container-lowest p-space-sm rounded flex flex-col gap-space-xs">
+<div class="flex items-center justify-between font-label-caps text-[10px] text-outline uppercase tracking-wider">
+<span>Transaction Stream (00:00 - 06:00 UTC)</span>
+<span class="text-error font-medium">Spike: 1,420 err/sec</span>
+</div>
+<div class="h-16 w-full">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 320 64">
+<defs>
+<lineargradient id="spikeGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#ffb4ab" stop-opacity="0.4"></stop>
+<stop offset="100%" stop-color="#ffb4ab" stop-opacity="0.0"></stop>
+</lineargradient>
+<lineargradient id="normalGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#7ca7ff" stop-opacity="0.25"></stop>
+<stop offset="100%" stop-color="#7ca7ff" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Baseline shaded area -->
+<path d="M0,52 L40,50 L80,51 L120,49 L140,50 L140,64 L0,64 Z" fill="url(#normalGrad)"></path>
+<path d="M0,52 L40,50 L80,51 L120,49 L140,50" fill="none" stroke="#aec6ff" stroke-width="2"></path>
+<!-- Anomalous Spike -->
+<path d="M140,50 L160,8 L190,14 L210,48 L210,64 L140,64 Z" fill="url(#spikeGrad)"></path>
+<path d="M140,50 L160,8 L190,14 L210,48" fill="none" stroke="#ffb4ab" stroke-dasharray="0" stroke-width="2.5"></path>
+<!-- Post Spike recovery -->
+<path d="M210,48 L240,50 L280,51 L320,49 L320,64 L210,64 Z" fill="url(#normalGrad)"></path>
+<path d="M210,48 L240,50 L280,51 L320,49" fill="none" stroke="#aec6ff" stroke-width="2"></path>
+<!-- Anomaly Point Marker -->
+<circle class="animate-ping" cx="160" cy="8" fill="#ffb4ab" r="4" style="animation-duration: 2s;"></circle>
+<circle cx="160" cy="8" fill="#ffb4ab" r="3"></circle>
+</svg>
+</div>
+</div>
+<!-- Action Buttons for Card 1 -->
+<div class="flex flex-wrap items-center gap-space-xs pt-space-xs">
+<button class="px-space-sm py-1 rounded-full bg-primary text-on-primary font-body-sm text-body-sm font-medium hover:brightness-110 flex items-center gap-1 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">code</span>
+<span>Generate SQL Patch</span>
+</button>
+<button class="px-space-sm py-1 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-container-highest font-body-sm text-body-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px] text-tertiary">tune</span>
+<span>Auto-isolate events</span>
+</button>
+<button class="px-space-sm py-1 rounded-full bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px] text-primary">chat_spark</span>
+<span>Explain</span>
+</button>
+</div>
+</div>
+<!-- Card 2: Warning Enterprise Churn Acceleration -->
+<div class="bg-surface-container p-space-md rounded-DEFAULT flex flex-col gap-space-md shadow-md hover:bg-surface-container-high transition-colors">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-7 h-7 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-semibold">
+<span class="material-symbols-outlined text-[16px]">warning</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface font-medium leading-tight">Warning: Enterprise Churn Acceleration in EU-Central</span>
+<span class="font-code-tabular text-body-sm text-outline mt-0.5">18 key accounts • Regional segment: de-central-1</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-secondary font-label-caps text-[10px] font-bold uppercase tracking-wider">Retention</span>
+</div>
+<div class="grid grid-cols-2 gap-space-xs font-code-tabular text-body-sm">
+<div class="p-space-xs bg-surface-container-low rounded flex flex-col">
+<span class="text-outline text-label-caps font-label-caps uppercase">Seat Contraction</span>
+<span class="text-error font-medium mt-0.5">-14% active seats</span>
+</div>
+<div class="p-space-xs bg-surface-container-low rounded flex flex-col">
+<span class="text-outline text-label-caps font-label-caps uppercase">Retention MoM</span>
+<span class="text-error font-medium mt-0.5">-3.8% Delta</span>
+</div>
+</div>
+<!-- Root Cause Reasoning -->
+<div class="p-space-sm rounded bg-surface-container-lowest flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5">psychology</span>
+<p class="font-body-sm text-body-sm text-on-surface leading-snug">
+                Correlated with latency degradation on <span class="text-on-surface-variant font-code-tabular">BigQuery Cluster 01</span> immediately following the DDL schema migration at 23:00 yesterday.
+              </p>
+</div>
+<!-- Action Buttons for Card 2 -->
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="px-space-sm py-1 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-container-highest font-body-sm text-body-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px] text-primary">ssid_chart</span>
+<span>Simulate LTV Impact</span>
+</button>
+<button class="px-space-sm py-1 rounded-full bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">menu_book</span>
+<span>Export to Notebook</span>
+</button>
+</div>
+</div>
+<!-- Card 3: Optimization Discovery -->
+<div class="bg-surface-container p-space-md rounded-DEFAULT flex flex-col gap-space-md shadow-md hover:bg-surface-container-high transition-colors">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-7 h-7 rounded-full bg-tertiary-container/30 text-tertiary flex items-center justify-center font-semibold">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface font-medium leading-tight">Optimization: Partition Pruning Opportunity</span>
+<span class="font-code-tabular text-body-sm text-outline mt-0.5">production_lake.fact_subscriptions</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-tertiary/20 text-tertiary font-label-caps text-[10px] font-bold uppercase tracking-wider">Save 95%</span>
+</div>
+<div class="p-space-sm rounded bg-surface-container-low flex items-center justify-between font-code-tabular text-body-sm">
+<div class="flex flex-col">
+<span class="text-outline text-label-caps font-label-caps uppercase">Current Byte Scan</span>
+<span class="text-on-surface font-medium">24.8 GB</span>
+</div>
+<span class="material-symbols-outlined text-outline">arrow_forward</span>
+<div class="flex flex-col text-right">
+<span class="text-tertiary text-label-caps font-label-caps uppercase">Optimized Scan</span>
+<span class="text-tertiary font-semibold">1.1 GB (-95%)</span>
+</div>
+</div>
+<div class="p-space-sm rounded bg-surface-container-lowest font-code-tabular text-code-tabular text-on-surface-variant">
+<code>CLUSTER BY cohort_month, tier</code>
+</div>
+<!-- Quick Apply Button -->
+<button class="w-full py-1.5 px-space-md rounded-full bg-surface-container-high hover:bg-surface-container-highest text-tertiary font-body-sm text-body-sm flex items-center justify-center gap-space-xs transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">magic_button</span>
+<span>Apply cluster optimization to SQL</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Drawer Footer: Natural Language Gemini Query Bar -->
+<div class="p-space-md bg-surface-container-high/90 backdrop-blur-xl flex flex-col gap-space-sm shadow-xl z-20">
+<!-- Suggested Prompts Pill Carousel -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1 no-scrollbar">
+<button class="prompt-pill whitespace-nowrap px-3 py-1 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest font-body-sm text-body-sm transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[14px] text-primary">forum</span>
+<span>Draft Slack Post-mortem</span>
+</button>
+<button class="prompt-pill whitespace-nowrap px-3 py-1 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest font-body-sm text-body-sm transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[14px] text-tertiary">notification_add</span>
+<span>Create BigQuery Alert</span>
+</button>
+<button class="prompt-pill whitespace-nowrap px-3 py-1 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest font-body-sm text-body-sm transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[14px] text-secondary">mail</span>
+<span>Share Report with Execs</span>
+</button>
+</div>
+<!-- Floating Input Capsule -->
+<div class="relative bg-surface-container-lowest rounded-3xl p-1.5 flex items-center gap-space-xs shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+<div class="pl-3 text-primary flex items-center">
+<span class="material-symbols-outlined text-[20px]">spark</span>
+</div>
+<input class="flex-1 bg-transparent border-none text-on-surface placeholder:text-outline font-body-sm text-body-sm focus:outline-none px-2" id="geminiDrawerInput" placeholder="Ask Gemini about these anomalies..." type="text"/>
+<div class="flex items-center gap-1 pr-1">
+<span class="hidden sm:inline-block font-label-caps text-[10px] text-outline px-1.5 py-0.5 rounded bg-surface-container">Gemini 1.5 Pro</span>
+<button class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container hover:brightness-110 flex items-center justify-center transition-transform active:scale-95" id="sendPromptBtn" type="button">
+<span class="material-symbols-outlined text-[18px]">arrow_upward</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between px-space-xs">
+<span class="font-label-caps text-label-caps text-outline">Grounded in BigQuery telemetry &amp; dbt lineage</span>
+<span class="font-code-tabular text-body-sm text-tertiary">3,120 tokens free</span>
+</div>
+</div>
+</aside>
+</div>
+</div>
+<script>
+  (function initDrawerInteractions() {
+    const drawer = document.getElementById('geminiDrawer');
+    const closeBtn = document.getElementById('closeDrawerBtn');
+    const openBtn = document.getElementById('drawerToggleBtn');
+    const refreshBtn = document.getElementById('refreshAnalysisBtn');
+    const input = document.getElementById('geminiDrawerInput');
+    const sendBtn = document.getElementById('sendPromptBtn');
+    const promptPills = document.querySelectorAll('.prompt-pill');
+
+    if (closeBtn && drawer) {
+      closeBtn.addEventListener('click', () => {
+        drawer.classList.add('translate-x-full');
+      });
+    }
+
+    if (openBtn && drawer) {
+      openBtn.addEventListener('click', () => {
+        drawer.classList.remove('translate-x-full');
+      });
+    }
+
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', () => {
+        const icon = refreshBtn.querySelector('.material-symbols-outlined');
+        if (icon) {
+          icon.classList.add('animate-spin');
+          setTimeout(() => {
+            icon.classList.remove('animate-spin');
+          }, 1000);
+        }
+      });
+    }
+
+    promptPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        if (input) {
+          input.value = pill.textContent.trim();
+          input.focus();
+        }
+      });
+    });
+
+    if (sendBtn && input) {
+      sendBtn.addEventListener('click', () => {
+        if (input.value.trim().length > 0) {
+          const val = input.value;
+          input.value = '';
+          input.placeholder = 'Gemini synthesizing analysis...';
+          setTimeout(() => {
+            input.placeholder = 'Ask Gemini about these anomalies...';
+          }, 1800);
+        }
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          sendBtn.click();
+        }
+      });
+    }
+  })();
+</script></main></div></body></html>

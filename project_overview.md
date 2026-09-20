@@ -31,7 +31,7 @@ The platform functions as an interactive, conversational data analyst. Users (bo
 ## 2. Technical Architecture & Component Flow
 
 ```
-[ Client: Next.js + Tailwind + Plotly.js ]
+[ Client: TanStack Router + Vite + Tailwind + Plotly.js ]
                   │
                   │ WebSocket (SSE / Real-time events) + HTTPS
                   ▼
@@ -54,6 +54,7 @@ The platform functions as an interactive, conversational data analyst. Users (bo
 [ Sandbox Manager / Pool Service ] (FastAPI + Redis)
      │  - Container Pooling / Warm Workers
      │  - Zero-Network Isolation (gVisor / Firecracker / E2B)
+     │
      ▼
 ┌────────────────────────────────────────────────────────┐
 │             Isolated Python Sandbox                    │
@@ -69,7 +70,7 @@ The platform functions as an interactive, conversational data analyst. Users (bo
 ## 3. Technical Requirements Document (TRD)
 
 ### 3.1 Recommended Tech Stack
-* **Frontend:** Next.js (App Router), TypeScript, Tailwind CSS, Shadcn UI, Monaco Editor (for code inspection), `react-plotly.js` or Vega-Lite.
+* **Frontend:** TanStack Router (Vite SPA), TypeScript, Tailwind CSS, Monaco Editor (for code inspection), `react-plotly.js` or Vega-Lite.
 * **Backend API & Gateway:** Python (FastAPI) or Node.js/TypeScript (Fastify/NestJS). FastAPI is recommended for clean integration with Python data structures.
 * **Database & Cache:**
   * **PostgreSQL:** User accounts, chat sessions, project metadata, message logs.

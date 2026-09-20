@@ -52,6 +52,26 @@ class ExecutionResult:
         }
 
 
+def _df_fingerprint(df_obj: Any) -> Optional[tuple]:
+    """Generate a lightweight structural and content fingerprint of a DataFrame."""
+    if not isinstance(df_obj, pd.DataFrame):
+        return None
+    shape = df_obj.shape
+    cols = tuple(df_obj.columns)
+    dtypes = tuple(str(d) for d in df_obj.dtypes)
+    try:
+        sample_hash = hash((
+            shape,
+            tuple(df_obj.index[:5]) if len(df_obj) > 0 else (),
+            tuple(df_obj.index[-5:]) if len(df_obj) > 5 else (),
+            tuple(tuple(r) for r in df_obj.head(3).itertuples(index=False, name=None)) if len(df_obj) > 0 else (),
+            tuple(tuple(r) for r in df_obj.tail(3).itertuples(index=False, name=None)) if len(df_obj) > 3 else (),
+        ))
+    except Exception:
+        sample_hash = hash(shape)
+    return (shape, cols, dtypes, sample_hash)
+
+
 class SandboxRunner:
     """Maintains a persistent, stateful IPython session for executing data science code."""
 
@@ -123,15 +143,42 @@ class SandboxRunner:
             "has_df": "df" in self.shell.user_ns and isinstance(self.shell.user_ns["df"], pd.DataFrame),
         }
 
+    def save_checkpoint(self, file_path: str) -> Dict[str, Any]:
+        """Atomically persist active 'df' to a Parquet file."""
+        if "df" not in self.shell.user_ns or not isinstance(self.shell.user_ns["df"], pd.DataFrame):
+            raise ValueError("No active 'df' DataFrame found in the execution namespace.")
+        df = self.shell.user_ns["df"]
+        os.makedirs(os.path.dirname(os.path.abspath(file_path)), exist_ok=True)
+        df.to_parquet(file_path, index=False)
+        return {
+            "file_path": file_path,
+            "rows": int(df.shape[0]),
+            "columns": int(df.shape[1]),
+            "memory_bytes": int(df.memory_usage(deep=True).sum()),
+        }
+
+    def load_checkpoint(self, file_path: str) -> Dict[str, Any]:
+        """Restore 'df' from a Parquet checkpoint file."""
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"Checkpoint file not found: {file_path}")
+        df = pd.read_parquet(file_path)
+        self.shell.user_ns["df"] = df
+        return {
+            "file_path": file_path,
+            "rows": int(df.shape[0]),
+            "columns": int(df.shape[1]),
+            "memory_bytes": int(df.memory_usage(deep=True).sum()),
+        }
+
     def execute(self, code: str, timeout_seconds: Optional[int] = None) -> ExecutionResult:
         """Execute a Python code string sequentially within the persistent IPython shell."""
         timeout = timeout_seconds or self.default_timeout_seconds
         start_time = time.perf_counter()
 
-        # Track previous state of 'df' to detect mutations
-        prev_df_state: Optional[tuple[int, int]] = None
+        # Track previous state of 'df' with deep fingerprint
+        prev_fingerprint = None
         if "df" in self.shell.user_ns and isinstance(self.shell.user_ns["df"], pd.DataFrame):
-            prev_df_state = self.shell.user_ns["df"].shape
+            prev_fingerprint = _df_fingerprint(self.shell.user_ns["df"])
 
         self.captured_figures = []
 
@@ -163,13 +210,17 @@ class SandboxRunner:
         # Extract figures from both explicit show() calls and namespace scan
         figures_json = self._extract_figures(raw_result)
 
-        # Check for DataFrame mutations
+        # Check for DataFrame mutations with deep fingerprint
         has_mutated = False
         current_df_shape: Optional[tuple[int, int]] = None
         if "df" in self.shell.user_ns and isinstance(self.shell.user_ns["df"], pd.DataFrame):
-            current_df_shape = self.shell.user_ns["df"].shape
-            if prev_df_state is None or prev_df_state != current_df_shape:
+            curr_df = self.shell.user_ns["df"]
+            current_df_shape = curr_df.shape
+            curr_fingerprint = _df_fingerprint(curr_df)
+            if prev_fingerprint is None or prev_fingerprint != curr_fingerprint:
                 has_mutated = True
+        elif prev_fingerprint is not None:
+            has_mutated = True
 
         return ExecutionResult(
             status="success",

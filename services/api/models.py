@@ -124,6 +124,42 @@ class ChatTurn(SQLModel, table=True):
     )
 
 
+class DataFrameCheckpoint(SQLModel, table=True):
+    """Immutable copy-on-write snapshot of a DataFrame state."""
+    __tablename__ = "dataframe_checkpoints"
+
+    id: str = Field(
+        default_factory=lambda: f"chk_{uuid.uuid4().hex[:12]}",
+        primary_key=True,
+        index=True,
+    )
+    session_id: str = Field(index=True, foreign_key="sessions.id")
+    version_tag: str = Field(description="e.g. df_v0, df_v1, df_v2", index=True)
+    chat_turn_id: Optional[str] = Field(default=None)
+    parquet_storage_path: str = Field(description="Local path or S3 URI of Parquet snapshot")
+    row_count: int = Field(default=0)
+    column_count: int = Field(default=0)
+    memory_bytes: int = Field(default=0)
+    operation_summary: str = Field(default="Initial dataset upload", description="Prompt or operation description")
+    schema_profile_json: str = Field(
+        default="{}",
+        description="JSON string representing the DataFrameProfile at this version"
+    )
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+
+    def get_profile(self) -> Optional[DataFrameProfile]:
+        """Deserialize stored profile."""
+        if not self.schema_profile_json or self.schema_profile_json == "{}":
+            return None
+        return DataFrameProfile.model_validate_json(self.schema_profile_json)
+
+    def set_profile(self, profile: DataFrameProfile) -> None:
+        """Serialize DataFrameProfile."""
+        self.schema_profile_json = profile.model_dump_json()
+
+
 # ---------------------------------------------------------------------------
 # API Request & Response DTOs
 # ---------------------------------------------------------------------------
@@ -173,6 +209,8 @@ class ChatRequest(BaseModel):
     prompt: str
     stream: bool = True
     max_attempts: int = 3
+    provider: Optional[str] = None
+    model: Optional[str] = None
 
 
 class ChatTurnResponse(BaseModel):
@@ -190,3 +228,90 @@ class ChatTurnResponse(BaseModel):
     active_version: str = "df_v0"
     error: Optional[str] = None
     detail: Optional[str] = None
+
+
+class ColumnDiff(BaseModel):
+    name: str
+    diff_type: str  # "added" | "removed" | "modified"
+    old_dtype: Optional[str] = None
+    new_dtype: Optional[str] = None
+
+
+class SchemaDiff(BaseModel):
+    row_delta: int
+    column_delta: int
+    columns_added: List[str] = []
+    columns_removed: List[str] = []
+    columns_modified: List[ColumnDiff] = []
+
+
+class CheckpointSummaryResponse(BaseModel):
+    id: str
+    session_id: str
+    version_tag: str
+    operation_summary: str
+    row_count: int
+    column_count: int
+    memory_bytes: int
+    created_at: datetime
+    is_active: bool = False
+    diff_from_previous: Optional[SchemaDiff] = None
+
+
+class RevertVersionRequest(BaseModel):
+    version_tag: str
+
+
+class RevertVersionResponse(BaseModel):
+    status: str
+    session_id: str
+    active_version: str
+    profile: DataFrameProfile
+    message: str
+
+
+# ---------------------------------------------------------------------------
+# DuckDB SQL Execution & Relational Mapper Models
+# ---------------------------------------------------------------------------
+
+class SqlQueryRequest(BaseModel):
+    sql: str
+    limit: int = 10000
+
+
+class SqlQueryColumn(BaseModel):
+    name: str
+    type: str
+
+
+class SqlQueryResponse(BaseModel):
+    status: str = "success"
+    session_id: str
+    sql: str
+    columns: List[SqlQueryColumn] = []
+    rows: List[Dict[str, Any]] = []
+    total_rows: int = 0
+    execution_time_ms: float = 0.0
+    error: Optional[str] = None
+
+
+class SqlCheckpointRequest(BaseModel):
+    sql: str
+    version_tag: Optional[str] = None
+    summary: Optional[str] = None
+
+
+class ForeignKeyRelation(BaseModel):
+    from_table: str
+    from_column: str
+    to_table: str
+    to_column: str
+    confidence: float = 1.0
+    suggested_join_type: str = "INNER JOIN"
+
+
+class SessionRelationsResponse(BaseModel):
+    session_id: str
+    tables: List[str] = []
+    relations: List[ForeignKeyRelation] = []
+

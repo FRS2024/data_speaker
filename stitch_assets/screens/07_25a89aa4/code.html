@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-background":"#e5e2e3","on-surface":"#e5e2e3","tertiary-fixed":"#68fcbf","surface-container":"#201f20","surface-container-highest":"#353436","secondary-fixed":"#eaddff","inverse-surface":"#e5e2e3","surface":"#131314","primary-fixed":"#d8e2ff","tertiary-container":"#01bf87","surface-container-low":"#1c1b1c","outline":"#8d909d","tertiary-fixed-dim":"#45dfa4","error-container":"#93000a","tertiary":"#45dfa4","on-secondary":"#3f018d","inverse-primary":"#2b5caf","on-error-container":"#ffdad6","on-surface-variant":"#c3c6d3","surface-variant":"#353436","on-primary-fixed-variant":"#004395","secondary":"#d2bbff","surface-container-high":"#2a2a2b","surface-dim":"#131314","surface-bright":"#39393a","on-tertiary":"#003825","inverse-on-surface":"#313031","on-primary-container":"#003a83","on-tertiary-fixed":"#002114","primary-container":"#7ca7ff","surface-tint":"#aec6ff","on-secondary-container":"#c6aaff","background":"#131314","on-tertiary-container":"#00462f","on-error":"#690005","outline-variant":"#434751","error":"#ffb4ab","primary":"#aec6ff","surface-container-lowest":"#0e0e0f","on-secondary-fixed":"#25005a","on-primary":"#002e6a","primary-fixed-dim":"#aec6ff","secondary-container":"#582ca7","on-primary-fixed":"#001a42","on-secondary-fixed-variant":"#5629a4","secondary-fixed-dim":"#d2bbff","on-tertiary-fixed-variant":"#005137"},borderRadius:{DEFAULT:"1rem",lg:"2rem",xl:"3rem",full:"9999px"},spacing:{"space-sm":"0.5rem",gutter:"1rem","gutter-lg":"1.5rem","space-2xl":"3rem","space-xs":"0.25rem","space-lg":"1.5rem","space-md":"1rem",margin:"1rem","space-xl":"2rem","margin-lg":"2rem","margin-md":"1.5rem"},fontFamily:{"body-md":["Geist"],"headline-lg-mobile":["Geist"],"headline-lg":["Geist"],"display-hero-mobile":["Geist"],"code-tabular":["JetBrains Mono"],"headline-md":["Geist"],"body-lg":["Geist"],"body-sm":["Geist"],"label-caps":["JetBrains Mono"],"display-hero":["Geist"]},fontSize:{"body-md":["14px",{lineHeight:"22px",letterSpacing:"0em",fontWeight:"400"}],"headline-lg-mobile":["22px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"500"}],"headline-lg":["28px",{lineHeight:"36px",letterSpacing:"-0.02em",fontWeight:"500"}],"display-hero-mobile":["30px",{lineHeight:"38px",letterSpacing:"-0.02em",fontWeight:"500"}],"code-tabular":["13px",{lineHeight:"20px",letterSpacing:"0em",fontWeight:"400"}],"headline-md":["20px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"500"}],"body-lg":["16px",{lineHeight:"26px",letterSpacing:"-0.005em",fontWeight:"400"}],"body-sm":["12px",{lineHeight:"18px",letterSpacing:"0.01em",fontWeight:"400"}],"label-caps":["11px",{lineHeight:"16px",letterSpacing:"0.06em",fontWeight:"500"}],"display-hero":["44px",{lineHeight:"52px",letterSpacing:"-0.03em",fontWeight:"500"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-low z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="h-16 px-space-md flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="Gemini Ambient Spark Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Uolhs4mfFVscy9lfJTNQDPjgs7b8iplhHBiLo687zvd2FadNfYY4ppNsodRLoYwCPDuLXQLPz-ZMuMUNn4euQTK0lfySIuFj1SBGzBKWRig0TI1iHz0fme7L6mYXRNO_mwqeW8Oh5gTl7eDG_9PfXb9E744gDSiQFJhKRgUV6wa9Aw8VMsjJx-FRH61_AKLrrw30Ew4fhar4Qzm6kPlGM2QI7i7loYfObVAGkYoF5cy8hEcTtKHtFAcxM"/><span class="font-headline-md text-headline-md text-on-surface">Gemini Data</span></div><button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[18px]">left_panel_close</span></button></div><div class="px-space-md py-space-xs"><div class="p-space-xs bg-surface-container rounded-full flex items-center gap-space-xs"><a class="flex-1 py-1 px-space-xs text-center rounded-full text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-colors" data-path="conversational-canvas" href="#">Chat AI</a><a class="flex-1 py-1 px-space-xs text-center rounded-full text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-colors" data-path="sql-and-deep-query" href="#">SQL Lab</a></div></div><div class="px-space-md py-space-sm"><button class="w-full py-space-sm px-space-md rounded-full bg-surface-container-high hover:bg-surface-container-highest text-primary font-body-md text-body-md flex items-center justify-center gap-space-sm transition-all shadow-[0_0_16px_rgba(124,167,255,0.08)]" type="button"><span class="material-symbols-outlined text-[20px]">add</span><span>New Session</span></button></div><div class="px-space-md py-space-xs"><button class="w-full py-space-xs px-space-md rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface flex items-center justify-between font-body-sm text-body-sm transition-colors" type="button"><span>Search analysis...</span><span class="material-symbols-outlined text-[16px]">search</span></button></div><div class="px-space-md mt-space-md flex flex-col gap-space-xs"><span class="font-label-caps text-label-caps uppercase tracking-wider text-outline px-space-xs">Workspaces</span><nav class="flex flex-col gap-space-xs" data-active-classes="bg-surface-container-high text-primary font-medium"><a class="flex items-center px-space-sm py-space-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="conversational-canvas" href="#"><span class="truncate">Active Analytics</span></a><a class="flex items-center px-space-sm py-space-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="sql-and-deep-query" href="#"><span class="truncate">SQL &amp; Deep Query</span></a><a class="flex items-center px-space-sm py-space-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="data-warehouses" href="#"><span class="truncate">Data Warehouses</span></a></nav></div><div class="px-space-md mt-space-md flex flex-col gap-space-xs"><span class="font-label-caps text-label-caps uppercase tracking-wider text-outline px-space-xs">Recent Sessions</span><div class="flex flex-col gap-space-xs"><a class="px-space-sm py-space-xs rounded text-body-sm font-body-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface truncate transition-colors" data-path="conversational-canvas" href="#">Q3 Revenue Cohort Analysis</a><a class="px-space-sm py-space-xs rounded text-body-sm font-body-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface truncate transition-colors" data-path="sql-and-deep-query" href="#">Customer Churn Prediction</a><a class="px-space-sm py-space-xs rounded text-body-sm font-body-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface truncate transition-colors" data-path="sql-and-deep-query" href="#">Real-time Clickstream Logs</a></div></div></div><div class="p-space-md bg-surface-container-lowest flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3oGy_JtI9L39Rh0ZQjW6_1atfTh0851i8WrMZSIJqy8RVSYn29DT7-4qKnUIEi6YiPRaOuE5WMhwYJb314V2St3KPtSarppuKUxR0-JLtyyHgszshSv5QwOspA9Tfq9D-Zwh1xyvgbKaXdN-9E6E5PAjSPVslSm6lvo-22sWNYfikdyoavQb8ZRxeUloQTrwEGwt9F-GmhCfIJ5WzSWwrkGdh8Py13KiZvH3LxqTWDI72LoxsaP8i"/><div class="flex flex-col"><span class="font-body-md text-body-md text-on-surface truncate leading-tight">Fares</span><span class="font-label-caps text-label-caps text-tertiary uppercase">Pro Analyst</span></div></div><div class="flex items-center gap-space-xs"><button class="p-space-xs rounded-full text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[18px]">settings</span></button></div></div></aside><div class="pl-64 flex flex-col min-h-screen"><header class="fixed top-0 left-64 right-0 h-16 bg-surface/80 backdrop-blur-xl z-40 px-space-lg flex items-center justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-sm font-body-sm text-body-sm text-on-surface-variant"><span class="hover:text-on-surface transition-colors cursor-pointer">Sessions</span><span class="text-outline">/</span><span class="text-on-surface font-body-md text-body-md">Q3 Revenue Cohort Analysis</span></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container font-code-tabular text-code-tabular text-tertiary"><span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span><span>BigQuery Connected • 14ms</span></div><nav class="flex items-center gap-space-md" data-active-classes="text-primary font-medium"><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="documentation" href="#">Docs</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="workspace-settings" href="#">Integrations</a></nav><div class="flex items-center gap-space-xs"><button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span></button><button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">share</span></button></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3oGy_JtI9L39Rh0ZQjW6_1atfTh0851i8WrMZSIJqy8RVSYn29DT7-4qKnUIEi6YiPRaOuE5WMhwYJb314V2St3KPtSarppuKUxR0-JLtyyHgszshSv5QwOspA9Tfq9D-Zwh1xyvgbKaXdN-9E6E5PAjSPVslSm6lvo-22sWNYfikdyoavQb8ZRxeUloQTrwEGwt9F-GmhCfIJ5WzSWwrkGdh8Py13KiZvH3LxqTWDI72LoxsaP8i"/></div></header><main class="w-full pt-16 bg-surface flex-1 flex flex-col"><div class="flex flex-col w-full">
+<!-- Interactive Modal Screen Wrapper with Ambient Workspace Backdrop -->
+<div class="relative w-full min-h-[calc(100vh-4rem)] flex items-center justify-center p-space-md md:p-space-xl overflow-hidden">
+<!-- Background Dimmed Context Simulation: Live Gemini Analytics Workspace -->
+<div aria-hidden="true" class="absolute inset-0 pointer-events-none select-none opacity-40 blur-md scale-[1.01] flex flex-col gap-space-lg p-space-xl overflow-hidden">
+<div class="flex items-center justify-between w-full pb-space-md">
+<div class="flex items-center gap-space-md">
+<div class="h-8 w-44 rounded-full bg-surface-container-high"></div>
+<div class="h-6 w-28 rounded-full bg-error-container/40"></div>
+</div>
+<div class="flex gap-space-sm">
+<div class="h-8 w-24 rounded-full bg-surface-container-high"></div>
+<div class="h-8 w-32 rounded-full bg-surface-container-highest"></div>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-space-md w-full">
+<div class="col-span-8 h-72 rounded-2xl bg-surface-container-low p-space-md flex flex-col justify-between">
+<div class="flex justify-between items-center">
+<span class="h-4 w-48 rounded bg-surface-container-highest"></span>
+<span class="h-4 w-16 rounded bg-surface-container"></span>
+</div>
+<!-- Mock Chart SVG -->
+<svg class="w-full h-44 text-error" fill="none" viewbox="0 0 700 160">
+<path d="M0 130 Q100 120 200 125 T400 90 T520 25 T600 135 T700 120" fill="none" stroke="currentColor" stroke-width="2.5"></path>
+<path d="M0 130 Q100 120 200 125 T400 90 T520 25 T600 135 T700 120 L700 160 L0 160 Z" fill="currentColor" fill-opacity="0.08"></path>
+</svg>
+</div>
+<div class="col-span-4 h-72 rounded-2xl bg-surface-container-low p-space-md flex flex-col gap-space-md">
+<div class="h-6 w-32 rounded bg-surface-container-highest"></div>
+<div class="h-16 w-full rounded-xl bg-surface-container"></div>
+<div class="h-16 w-full rounded-xl bg-surface-container"></div>
+<div class="h-16 w-full rounded-xl bg-surface-container"></div>
+</div>
+</div>
+<div class="h-64 rounded-2xl bg-surface-container-low w-full"></div>
+</div>
+<!-- Backdrop Scrim with Glass Blur -->
+<div class="absolute inset-0 bg-surface-container-lowest/80 backdrop-blur-md transition-opacity"></div>
+<!-- Radiant Ambient Lighting Glow Behind Modal -->
+<div class="absolute pointer-events-none w-[680px] h-[680px] rounded-full bg-gradient-to-tr from-primary/10 via-secondary/10 to-transparent blur-3xl -z-0 transform -translate-y-4"></div>
+<!-- Centered High-Fidelity Modal Dialog Surface -->
+<div class="relative z-10 w-full max-w-[840px] max-h-[92vh] bg-surface-container-low text-on-surface rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200" id="remediation-modal">
+<!-- Top Subtle Luminous Halo Accent Line -->
+<div class="h-0.5 w-full bg-gradient-to-r from-transparent via-primary-container/70 to-transparent"></div>
+<!-- 1. Modal Header -->
+<div class="p-space-lg pb-space-md bg-surface-container-low flex items-start justify-between gap-space-md">
+<div class="flex items-start gap-space-md min-w-0">
+<!-- Gemini Sparkle Gradient Badge -->
+<div class="p-space-xs rounded-xl bg-gradient-to-tr from-primary-container/20 to-secondary-container/30 flex items-center justify-center text-primary shrink-0 shadow-[0_0_20px_rgba(124,167,255,0.25)]">
+<span class="material-symbols-outlined text-[24px]">auto_awesome</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex flex-wrap items-center gap-space-xs">
+<h2 class="font-headline-md text-headline-md text-on-surface truncate">Generate SQL Patch &amp; Auto-Remediation</h2>
+<span class="px-space-xs py-0.5 rounded-full bg-surface-container font-code-tabular text-body-sm text-tertiary flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+<span>Synthesized</span>
+</span>
+</div>
+<!-- Incident Subtitle & Impact -->
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+              Incident: <span class="text-on-surface font-medium">Stripe Webhook Retry Storm Spike</span>
+<span class="text-outline mx-1">•</span>
+              Impact: <span class="text-error font-medium">842 paused subscriptions</span>
+<span class="text-on-surface-variant">($42,650 MRR at risk)</span>
+</p>
+<!-- Target Database Badge -->
+<div class="flex items-center gap-space-xs mt-space-xs font-code-tabular text-code-tabular text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-primary">database</span>
+<span class="text-on-surface">BigQuery</span>
+<span class="text-outline">/</span>
+<span class="text-primary-fixed-dim bg-surface-container px-space-xs py-0.5 rounded">production_lake.analytics_core.fact_subscriptions</span>
+</div>
+</div>
+</div>
+<!-- Close Button -->
+<button aria-label="Close modal" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface transition-colors shrink-0">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Scrollable Modal Body Container -->
+<div class="flex-1 overflow-y-auto px-space-lg py-space-sm flex flex-col gap-space-md">
+<!-- 2. Root Cause Analysis & Proposed Fix Summary -->
+<div class="p-space-md rounded-xl bg-surface-container flex flex-col gap-space-sm shadow-sm">
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5 shrink-0">psychology</span>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-outline">Autonomous Remediation Synthesis</span>
+<p class="font-body-sm text-body-sm text-on-surface leading-relaxed mt-1">
+                Gemini synthesized a safe idempotency lock release and exponential retry reset. The patch adds a deadlock-safe advisory lock bypass and updates transaction status from <code class="font-code-tabular text-code-tabular px-1 py-0.5 rounded bg-surface-container-high text-error">SCHEMA_LOCK_FAIL</code> to <code class="font-code-tabular text-code-tabular px-1 py-0.5 rounded bg-surface-container-high text-tertiary">RETRY_QUEUED</code> with backoff jitter.
+              </p>
+</div>
+</div>
+<!-- Safety Verification Badges Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-xs pt-space-xs">
+<div class="p-space-xs rounded-lg bg-surface-container-high flex items-center gap-space-xs min-w-0">
+<span class="material-symbols-outlined text-tertiary text-[16px] shrink-0">verified_user</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate">0 schema regressions</span>
+</div>
+<div class="p-space-xs rounded-lg bg-surface-container-high flex items-center gap-space-xs min-w-0">
+<span class="material-symbols-outlined text-primary text-[16px] shrink-0">group_work</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate">842 affected accounts</span>
+</div>
+<div class="p-space-xs rounded-lg bg-surface-container-high flex items-center gap-space-xs min-w-0">
+<span class="material-symbols-outlined text-secondary text-[16px] shrink-0">speed</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate">~1.2s on BQ Cluster 01</span>
+</div>
+<div class="p-space-xs rounded-lg bg-surface-container-high flex items-center gap-space-xs min-w-0">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[16px] shrink-0">history</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate">Auto rollback plan</span>
+</div>
+</div>
+</div>
+<!-- 3. Side-by-Side Diff & SQL Code Patch Preview -->
+<div class="flex flex-col rounded-xl bg-surface-container-lowest overflow-hidden shadow-inner">
+<!-- Editor Sub-Header / Tabs -->
+<div class="px-space-md py-space-xs bg-surface-container flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<button class="px-space-sm py-1 rounded-full bg-surface-container-highest text-primary font-code-tabular text-code-tabular flex items-center gap-1.5 transition-all shadow-sm" id="tab-patch-btn">
+<span class="material-symbols-outlined text-[14px]">code</span>
+<span>remedy_patch_v1.sql</span>
+</button>
+<button class="px-space-sm py-1 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-code-tabular text-code-tabular flex items-center gap-1.5 transition-all" id="tab-rollback-btn">
+<span class="material-symbols-outlined text-[14px]">undo</span>
+<span>rollback_v1.sql</span>
+</button>
+</div>
+<!-- Quick Action Icons -->
+<div class="flex items-center gap-space-xs">
+<button class="px-space-xs py-1 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high text-body-sm font-body-sm flex items-center gap-1 transition-colors" id="copy-sql-btn" title="Copy SQL">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+<span class="hidden sm:inline">Copy</span>
+</button>
+<button class="px-space-xs py-1 rounded-md text-primary hover:text-primary-fixed-dim hover:bg-surface-container-high text-body-sm font-body-sm flex items-center gap-1 transition-colors" title="Open in SQL Lab">
+<span class="material-symbols-outlined text-[16px]">terminal</span>
+<span class="hidden sm:inline">Open in SQL Lab</span>
+</button>
+</div>
+</div>
+<!-- Code View Area: Patch Content -->
+<div class="p-space-md font-code-tabular text-code-tabular overflow-x-auto leading-relaxed max-h-56 select-text text-on-surface" id="code-view-patch">
+<div class="text-outline-variant font-medium select-none mb-1">-- STEP 1: Release stale idempotent lock keys older than 30m</div>
+<div class="text-on-surface">
+<span class="text-primary font-semibold">UPDATE</span> <span class="text-secondary">`production_lake.analytics_core.webhook_locks`</span>
+</div>
+<div class="pl-4 text-on-surface">
+<span class="text-primary font-semibold">SET</span> lock_status = <span class="text-tertiary">'FORCE_RELEASED'</span>, released_at = <span class="text-primary-container font-semibold">CURRENT_TIMESTAMP()</span>, release_reason = <span class="text-tertiary">'INCIDENT_REMEDY_STORM'</span>
+</div>
+<div class="pl-4 text-on-surface">
+<span class="text-primary font-semibold">WHERE</span> lock_status = <span class="text-tertiary">'ACQUIRED'</span> <span class="text-primary font-semibold">AND</span> acquired_at &lt; <span class="text-primary-container font-semibold">TIMESTAMP_SUB</span>(<span class="text-primary-container font-semibold">CURRENT_TIMESTAMP()</span>, <span class="text-primary font-semibold">INTERVAL</span> <span class="text-tertiary-fixed">30 MINUTE</span>);
+            </div>
+<div class="my-3 border-t border-surface-container-high/40"></div>
+<div class="text-outline-variant font-medium select-none mb-1">-- STEP 2: Re-queue idempotency payload with randomized exponential jitter</div>
+<div class="text-on-surface">
+<span class="text-primary font-semibold">MERGE</span> <span class="text-secondary">`production_lake.analytics_core.fact_subscriptions`</span> T
+            </div>
+<div class="text-on-surface">
+<span class="text-primary font-semibold">USING</span> <span class="text-secondary">`production_lake.staging_lake.stripe_failed_events_quarantine`</span> S
+            </div>
+<div class="pl-4 text-on-surface">
+<span class="text-primary font-semibold">ON</span> T.subscription_id = S.subscription_id <span class="text-primary font-semibold">AND</span> S.error_code = <span class="text-tertiary">'SCHEMA_LOCK_CONFLICT'</span>
+</div>
+<div class="text-on-surface">
+<span class="text-primary font-semibold">WHEN MATCHED THEN</span>
+</div>
+<div class="pl-4 text-on-surface">
+<span class="text-primary font-semibold">UPDATE SET</span>
+</div>
+<div class="pl-8 text-on-surface">
+              status = <span class="text-tertiary">'RETRY_QUEUED'</span>,
+            </div>
+<div class="pl-8 text-on-surface">
+              retry_attempt = T.retry_attempt + <span class="text-tertiary-fixed">1</span>,
+            </div>
+<div class="pl-8 text-on-surface">
+              next_retry_at = <span class="text-primary-container font-semibold">TIMESTAMP_ADD</span>(<span class="text-primary-container font-semibold">CURRENT_TIMESTAMP()</span>, <span class="text-primary font-semibold">INTERVAL CAST</span>(<span class="text-primary-container font-semibold">POW</span>(<span class="text-tertiary-fixed">2</span>, <span class="text-primary-container font-semibold">LEAST</span>(T.retry_attempt, <span class="text-tertiary-fixed">5</span>)) * <span class="text-tertiary-fixed">15</span> + <span class="text-primary-container font-semibold">RAND</span>()*<span class="text-tertiary-fixed">10</span> <span class="text-primary font-semibold">AS INT64</span>) <span class="text-primary font-semibold">SECOND</span>);
+            </div>
+</div>
+<!-- Code View Area: Rollback Content (Hidden by default) -->
+<div class="hidden p-space-md font-code-tabular text-code-tabular overflow-x-auto leading-relaxed max-h-56 select-text text-on-surface" id="code-view-rollback">
+<div class="text-outline-variant font-medium select-none mb-1">-- ROLLBACK: Restore original quarantine state snapshot if anomaly persists</div>
+<div class="text-on-surface">
+<span class="text-primary font-semibold">UPDATE</span> <span class="text-secondary">`production_lake.analytics_core.fact_subscriptions`</span>
+</div>
+<div class="pl-4 text-on-surface">
+<span class="text-primary font-semibold">SET</span> status = <span class="text-error">'SCHEMA_LOCK_FAIL'</span>, next_retry_at = <span class="text-secondary">NULL</span>
+</div>
+<div class="pl-4 text-on-surface">
+<span class="text-primary font-semibold">WHERE</span> status = <span class="text-tertiary">'RETRY_QUEUED'</span>
+<span class="text-primary font-semibold">AND</span> updated_at &gt;= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), <span class="text-primary font-semibold">INTERVAL</span> <span class="text-tertiary-fixed">5 MINUTE</span>);
+            </div>
+</div>
+</div>
+<!-- 4. Execution Parameters & Deployment Controls -->
+<div class="p-space-md rounded-xl bg-surface-container flex flex-col gap-space-sm">
+<span class="font-label-caps text-label-caps uppercase text-outline">Remediation Policy &amp; Execution Mode</span>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm">
+<!-- Mode 1 (Selected) -->
+<label class="p-space-sm rounded-xl bg-surface-container-high hover:bg-surface-container-highest cursor-pointer flex items-start gap-space-sm transition-all shadow-sm">
+<input checked="" class="mt-1 accent-primary w-4 h-4 cursor-pointer" name="exec_mode" type="radio"/>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md text-on-surface font-medium">Dry-Run Simulation First</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Recommended. Runs sandboxed state validation before committing mutation.</span>
+</div>
+</label>
+<!-- Mode 2 -->
+<label class="p-space-sm rounded-xl bg-surface-container hover:bg-surface-container-high cursor-pointer flex items-start gap-space-sm transition-all">
+<input class="mt-1 accent-primary w-4 h-4 cursor-pointer" name="exec_mode" type="radio"/>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md text-on-surface font-medium">Direct Commit with Snapshot</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Captures instant BigQuery time-travel snapshot with auto-abort on failure.</span>
+</div>
+</label>
+</div>
+<!-- Slack Notification Checkbox -->
+<div class="pt-space-xs flex items-center justify-between">
+<label class="flex items-center gap-space-sm cursor-pointer select-none">
+<input checked="" class="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface">
+                Post execution audit trail to <span class="font-code-tabular text-code-tabular text-primary">#incident-revenue-alerts</span> (Slack)
+              </span>
+</label>
+<span class="font-label-caps text-label-caps text-tertiary flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+<span>Live Webhook Hooked</span>
+</span>
+</div>
+</div>
+</div>
+<!-- 5. Modal Footer / Action Bar -->
+<div class="p-space-md px-space-lg bg-surface-container flex flex-wrap items-center justify-between gap-space-md">
+<!-- Left: Operator Signature & Avatar -->
+<div class="flex items-center gap-space-sm">
+<img alt="Fares profile avatar" class="w-8 h-8 rounded-full object-cover ring-1 ring-primary/30 shadow-sm" src="https://lh3.googleusercontent.com/aida/AEtjO1Wf2ivSXvZXBY-7zeYpBCMboP0i3XBea4-Y8oOigjMU8SqFm01x_K5H1w8BMWcBu8fCym9z4_U73QBQ5Go36RR-iajoxwiCjzoj7gpNw3flCvOD1diXZPpz42DMxrMCZgXTDLgqifRikh0FzHB647jfSLs6HSaUByjCJmbkJNSB8-m4Ng4erITvbi-AdMCQwH_vwdFyyZo6qCent5ON88nNTayOvZbpgbBR4DMD2NRbYuIBuDWSEEalcS4"/>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface leading-tight font-medium">Signed by Fares</span>
+<span class="font-label-caps text-label-caps text-tertiary">Pro Analyst • Authorized</span>
+</div>
+</div>
+<!-- Right: Action Buttons Group -->
+<div class="flex items-center gap-space-sm">
+<!-- Cancel / Secondary -->
+<button class="px-space-md py-space-xs rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-sm text-body-sm transition-all">
+            Cancel &amp; Review Manually
+          </button>
+<!-- Primary Execution Pill Button with Ambient Radiant Glow -->
+<button class="relative group px-space-md py-space-xs rounded-full bg-gradient-to-r from-primary-container to-secondary font-body-md text-body-md font-medium text-on-primary-container shadow-[0_0_24px_rgba(124,167,255,0.35)] hover:shadow-[0_0_32px_rgba(124,167,255,0.55)] transition-all flex items-center gap-space-xs hover:scale-[1.02] active:scale-[0.98]" id="btn-execute-patch">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+<span>Execute Patch in BigQuery</span>
+<span class="font-code-tabular text-[11px] opacity-75 ml-1 hidden sm:inline">(⌘ + Enter)</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive JavaScript for Tab Switching, SQL Copying & Execution Trigger -->
+<script>
+    (function() {
+      const patchBtn = document.getElementById('tab-patch-btn');
+      const rollbackBtn = document.getElementById('tab-rollback-btn');
+      const patchView = document.getElementById('code-view-patch');
+      const rollbackView = document.getElementById('code-view-rollback');
+      const copyBtn = document.getElementById('copy-sql-btn');
+      const execBtn = document.getElementById('btn-execute-patch');
+
+      if (patchBtn && rollbackBtn && patchView && rollbackView) {
+        patchBtn.addEventListener('click', () => {
+          patchBtn.className = 'px-space-sm py-1 rounded-full bg-surface-container-highest text-primary font-code-tabular text-code-tabular flex items-center gap-1.5 transition-all shadow-sm';
+          rollbackBtn.className = 'px-space-sm py-1 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-code-tabular text-code-tabular flex items-center gap-1.5 transition-all';
+          patchView.classList.remove('hidden');
+          rollbackView.classList.add('hidden');
+        });
+
+        rollbackBtn.addEventListener('click', () => {
+          rollbackBtn.className = 'px-space-sm py-1 rounded-full bg-surface-container-highest text-primary font-code-tabular text-code-tabular flex items-center gap-1.5 transition-all shadow-sm';
+          patchBtn.className = 'px-space-sm py-1 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-code-tabular text-code-tabular flex items-center gap-1.5 transition-all';
+          rollbackView.classList.remove('hidden');
+          patchView.classList.add('hidden');
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          const isPatch = !patchView.classList.contains('hidden');
+          const sqlText = isPatch 
+            ? "UPDATE `production_lake.analytics_core.webhook_locks` SET lock_status = 'FORCE_RELEASED', released_at = CURRENT_TIMESTAMP(), release_reason = 'INCIDENT_REMEDY_STORM' WHERE lock_status = 'ACQUIRED' AND acquired_at < TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 MINUTE);\n\nMERGE `production_lake.analytics_core.fact_subscriptions` T USING `production_lake.staging_lake.stripe_failed_events_quarantine` S ON T.subscription_id = S.subscription_id AND S.error_code = 'SCHEMA_LOCK_CONFLICT' WHEN MATCHED THEN UPDATE SET status = 'RETRY_QUEUED', retry_attempt = T.retry_attempt + 1, next_retry_at = TIMESTAMP_ADD(CURRENT_TIMESTAMP(), INTERVAL CAST(POW(2, LEAST(T.retry_attempt, 5)) * 15 + RAND()*10 AS INT64) SECOND);"
+            : "UPDATE `production_lake.analytics_core.fact_subscriptions` SET status = 'SCHEMA_LOCK_FAIL', next_retry_at = NULL WHERE status = 'RETRY_QUEUED' AND updated_at >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 5 MINUTE);";
+          
+          navigator.clipboard.writeText(sqlText).then(() => {
+            const originalHTML = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] text-tertiary">check</span><span class="text-tertiary">Copied!</span>';
+            setTimeout(() => {
+              copyBtn.innerHTML = originalHTML;
+            }, 2000);
+          });
+        });
+      }
+
+      // Keyboard Shortcut (Command + Enter) to trigger execution
+      document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+          if (execBtn) {
+            execBtn.click();
+          }
+        }
+      });
+
+      if (execBtn) {
+        execBtn.addEventListener('click', () => {
+          execBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">sync</span><span>Validating Dry-Run in BigQuery...</span>';
+          execBtn.classList.add('opacity-90', 'pointer-events-none');
+          setTimeout(() => {
+            execBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] text-tertiary">check_circle</span><span>Patch Applied Successfully (842 Rows)</span>';
+            execBtn.classList.remove('from-primary-container', 'to-secondary');
+            execBtn.classList.add('bg-tertiary-container', 'text-on-tertiary-container');
+          }, 1600);
+        });
+      }
+    })();
+  </script>
+</div></main></div></body></html>

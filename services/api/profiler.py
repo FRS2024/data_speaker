@@ -350,3 +350,82 @@ def generate_loader_code(
         f"{table_name} = pd.read_csv(r'{target_path}', on_bad_lines='skip')\n"
         f"df = {table_name}\n"
     )
+
+
+def infer_foreign_key_relations(profiles: List[DataFrameProfile]) -> List[Any]:
+    """
+    Heuristically infer potential foreign key / join relationships between tables
+    based on column names, suffixes, and data type compatibility.
+    """
+    from services.api.models import ForeignKeyRelation
+
+    relations: List[ForeignKeyRelation] = []
+    seen_pairs = set()
+
+    for i, prof_a in enumerate(profiles):
+        tbl_a = prof_a.table_name
+        for prof_b in profiles[i + 1:]:
+            tbl_b = prof_b.table_name
+
+            for col_a in prof_a.columns:
+                name_a = col_a.name.lower().strip()
+                type_a = col_a.dtype.lower()
+
+                for col_b in prof_b.columns:
+                    name_b = col_b.name.lower().strip()
+                    type_b = col_b.dtype.lower()
+
+                    pair_key = tuple(sorted([(tbl_a, name_a), (tbl_b, name_b)]))
+                    if pair_key in seen_pairs:
+                        continue
+
+                    # Case 1: Exact column name match
+                    if name_a == name_b:
+                        is_id = name_a.endswith("_id") or name_a == "id" or "code" in name_a or "key" in name_a
+                        conf = 0.95 if is_id else 0.65
+                        relations.append(
+                            ForeignKeyRelation(
+                                from_table=tbl_a,
+                                from_column=col_a.name,
+                                to_table=tbl_b,
+                                to_column=col_b.name,
+                                confidence=conf,
+                                suggested_join_type="INNER JOIN" if is_id else "LEFT JOIN",
+                            )
+                        )
+                        seen_pairs.add(pair_key)
+                        continue
+
+                    # Case 2: Table A has `{tbl_b_stem}_id` and Table B has `id`
+                    stem_b = tbl_b.lower().replace("df_", "").rstrip("s")
+                    stem_a = tbl_a.lower().replace("df_", "").rstrip("s")
+
+                    if (name_a == f"{stem_b}_id" or name_a == f"{stem_b}id") and (name_b == "id" or name_b == f"{stem_b}_id"):
+                        relations.append(
+                            ForeignKeyRelation(
+                                from_table=tbl_a,
+                                from_column=col_a.name,
+                                to_table=tbl_b,
+                                to_column=col_b.name,
+                                confidence=0.90,
+                                suggested_join_type="INNER JOIN",
+                            )
+                        )
+                        seen_pairs.add(pair_key)
+                        continue
+
+                    if (name_b == f"{stem_a}_id" or name_b == f"{stem_a}id") and (name_a == "id" or name_a == f"{stem_a}_id"):
+                        relations.append(
+                            ForeignKeyRelation(
+                                from_table=tbl_b,
+                                from_column=col_b.name,
+                                to_table=tbl_a,
+                                to_column=col_a.name,
+                                confidence=0.90,
+                                suggested_join_type="INNER JOIN",
+                            )
+                        )
+                        seen_pairs.add(pair_key)
+                        continue
+
+    return relations

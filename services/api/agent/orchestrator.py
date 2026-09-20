@@ -40,12 +40,19 @@ class AgentOrchestrator:
         session_id: str,
         user_prompt: str,
         max_attempts: int = 3,
+        provider_name: Optional[str] = None,
+        model_name: Optional[str] = None,
     ) -> AsyncGenerator[str, None]:
         """
         Execute an autonomous analytical turn with real-time SSE streaming.
         Emits token, code_generated, execution_status, execution_stdout,
         chart_generated, reflexion_step, and turn_complete events.
         """
+        active_provider = (
+            get_llm_provider(provider_name, model_name)
+            if (provider_name or model_name)
+            else get_llm_provider()
+        )
         start_time = time.perf_counter()
         turn_id = f"trn_{uuid.uuid4().hex[:12]}"
 
@@ -70,7 +77,7 @@ class AgentOrchestrator:
             yield format_sse("execution_status", {"status": "generating_code", "attempt": attempt})
 
             try:
-                tool_call = await self.provider.generate_code_call(messages, system_prompt)
+                tool_call = await active_provider.generate_code_call(messages, system_prompt)
                 executed_code = tool_call.code
             except Exception as exc:
                 yield format_sse("error", {"error": f"LLM generation failed: {str(exc)}"})
@@ -103,6 +110,23 @@ class AgentOrchestrator:
                 # Stream any generated Plotly figures
                 for fig in exec_res.figures:
                     yield format_sse("chart_generated", {"figure_type": "plotly", "spec": fig})
+
+                if exec_res.has_mutated_dataframe:
+                    db.refresh(session_obj)
+                    yield format_sse(
+                        "checkpoint_created",
+                        {
+                            "version_tag": session_obj.active_dataframe_version,
+                            "df_shape": exec_res.df_shape,
+                            "operation": user_prompt[:100],
+                        },
+                    )
+                    # Emit dataset payload for TanStack Query cache
+                    ds_data = session_service.get_dataset_data(
+                        db, session_id, session_obj.active_dataframe_version, limit=1000
+                    )
+                    if ds_data:
+                        yield format_sse("dataset", ds_data)
 
                 break  # Successful execution, exit Reflexion loop
 
@@ -158,7 +182,7 @@ class AgentOrchestrator:
 
         full_explanation = ""
         try:
-            async for token in self.provider.synthesize_explanation_stream(
+            async for token in active_provider.synthesize_explanation_stream(
                 synthesis_messages, system_prompt
             ):
                 full_explanation += token
@@ -166,9 +190,16 @@ class AgentOrchestrator:
         except Exception as exc:
             yield format_sse("error", {"error": f"Synthesis stream error: {str(exc)}"})
 
-        total_duration_ms = int((time.perf_counter() - start_time) * 1000)
+        # 4.5. Decoupled Dataset Event for TanStack Query & Table
+        try:
+            ds = session_service.get_dataset_data(db, session_id, limit=5000)
+            if ds:
+                yield format_sse("dataset", ds)
+        except Exception:
+            pass
 
         # 5. Final Turn Complete Event
+        total_duration_ms = int((time.perf_counter() - start_time) * 1000)
         yield format_sse(
             "turn_complete",
             {
@@ -187,6 +218,8 @@ class AgentOrchestrator:
         session_id: str,
         user_prompt: str,
         max_attempts: int = 3,
+        provider_name: Optional[str] = None,
+        model_name: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Synchronous non-streaming execution wrapper. Consumes the SSE stream
@@ -206,6 +239,8 @@ class AgentOrchestrator:
             session_id=session_id,
             user_prompt=user_prompt,
             max_attempts=max_attempts,
+            provider_name=provider_name,
+            model_name=model_name,
         ):
             # Parse SSE lines
             lines = [line for line in chunk.strip().splitlines() if line]

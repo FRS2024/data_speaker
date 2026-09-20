@@ -1,7 +1,4 @@
-"use client";
-
 import React, { useState, useRef } from "react";
-import { X, UploadCloud, FileText, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { uploadDataset } from "@/lib/api";
 import { FileUploadResponse } from "@/lib/types";
 
@@ -36,7 +33,7 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
       onUploadSuccess(response);
       onClose();
     } catch (err: any) {
-      setError(err.message || "Failed to upload and ingest file.");
+      setError(err.message || "Failed to upload and profile dataset.");
     } finally {
       setIsUploading(false);
     }
@@ -58,34 +55,43 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-      <div className="w-full max-w-lg bg-studio-surface border border-studio-border rounded-lg shadow-2xl overflow-hidden font-mono">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-surface-container-lowest/80 backdrop-blur-md"
+        onClick={onClose}
+      />
+
+      {/* Modal Surface */}
+      <div className="relative z-10 w-full max-w-lg bg-surface-container-low text-on-surface rounded-2xl shadow-2xl overflow-hidden border border-outline-variant/30 animate-in fade-in zoom-in-95 duration-200">
+        <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-primary-container/70 to-transparent" />
+
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-studio-border bg-studio-card">
-          <div className="flex items-center space-x-2 text-sm text-studio-highlight font-bold">
-            <UploadCloud className="w-4 h-4 text-studio-amber" />
-            <span>INGEST NEW DATASET</span>
+        <div className="p-space-md bg-surface-container-low flex items-center justify-between border-b border-outline-variant/15">
+          <div className="flex items-center gap-2 text-primary font-medium font-body-md">
+            <span className="material-symbols-outlined text-[20px]">upload_file</span>
+            <span>Ingest & Profile Tabular Dataset</span>
           </div>
           <button
             onClick={onClose}
             disabled={isUploading}
-            className="text-studio-muted hover:text-studio-highlight transition"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface transition-colors"
           >
-            <X className="w-4 h-4" />
+            <span className="material-symbols-outlined text-[18px]">close</span>
           </button>
         </div>
 
-        {/* Modal Body */}
-        <div className="p-6 space-y-4">
+        {/* Body */}
+        <div className="p-space-lg space-y-space-md">
           <div
             onDragOver={onDragOver}
             onDragLeave={onDragLeave}
             onDrop={onDrop}
             onClick={() => fileInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-lg p-8 flex flex-col items-center justify-center text-center cursor-pointer transition ${
+            className={`border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${
               isDragging
-                ? "border-studio-amber bg-studio-amber/5"
-                : "border-studio-border hover:border-studio-muted bg-studio-bg"
+                ? "border-primary bg-primary/5"
+                : "border-outline-variant/40 hover:border-primary/50 bg-surface-container-lowest"
             }`}
           >
             <input
@@ -98,43 +104,48 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
             />
 
             {isUploading ? (
-              <div className="flex flex-col items-center space-y-3">
-                <Loader2 className="w-8 h-8 text-studio-amber animate-spin" />
-                <div className="text-xs text-studio-highlight">
-                  PROFILING SCHEMA & HYDRATING SANDBOX...
-                </div>
-                <div className="text-[11px] text-studio-muted">
+              <div className="flex flex-col items-center space-y-2">
+                <span className="material-symbols-outlined text-[32px] text-primary animate-spin">
+                  sync
+                </span>
+                <span className="text-body-md font-medium text-on-surface">
+                  Profiling Schema & Hydrating Sandbox...
+                </span>
+                <span className="text-body-sm text-outline">
                   Extracting dimensions, types, null percentages & statistics
-                </div>
+                </span>
               </div>
             ) : (
               <>
-                <FileText className="w-10 h-10 text-studio-muted mb-3" />
-                <p className="text-xs text-studio-highlight font-bold mb-1">
-                  Drag and drop your file here, or click to browse
+                <span className="material-symbols-outlined text-[36px] text-primary mb-2">
+                  cloud_upload
+                </span>
+                <p className="text-body-md text-on-surface font-medium mb-1">
+                  Drag & drop your dataset here, or click to browse
                 </p>
-                <p className="text-[11px] text-studio-muted mb-3">
-                  CSV, TSV, Parquet, Excel (.xlsx), JSON, or SQLite (.db)
+                <p className="text-body-sm text-outline mb-3">
+                  CSV, Parquet, Excel (.xlsx), TSV, JSON, SQLite (.db)
                 </p>
-                <div className="flex items-center space-x-2 text-[10px] text-studio-muted/80 bg-studio-card px-2.5 py-1 rounded border border-studio-border">
-                  <span>⚡ Zero-copy transfer to isolated Python sandbox</span>
+                <div className="flex items-center gap-1.5 text-[11px] font-code-tabular text-tertiary bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant/20">
+                  <span className="material-symbols-outlined text-[14px]">bolt</span>
+                  <span>Zero-copy transfer to isolated Python sandbox</span>
                 </div>
               </>
             )}
           </div>
 
           {error && (
-            <div className="flex items-start space-x-2 text-xs text-studio-crimson bg-studio-crimson/10 border border-studio-crimson/20 p-3 rounded">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <div className="flex items-start gap-2 text-body-sm text-error bg-error-container/20 border border-error/30 p-3 rounded-xl">
+              <span className="material-symbols-outlined text-[18px] shrink-0 mt-0.5">error</span>
               <span>{error}</span>
             </div>
           )}
 
-          <div className="text-[11px] text-studio-muted space-y-1">
-            <div className="font-bold text-studio-highlight">Supported Formats:</div>
-            <div>• Tabular Delimited: CSV (auto-delimiter & encoding), TSV</div>
-            <div>• Columnar & Spreadsheet: Apache Parquet, Microsoft Excel (.xlsx)</div>
-            <div>• Relational & Structured: SQLite databases, JSON/NDJSON records</div>
+          <div className="text-[12px] text-on-surface-variant font-code-tabular space-y-1 bg-surface-container p-3 rounded-xl border border-outline-variant/15">
+            <div className="font-semibold text-on-surface">Autonomous Ingestion Engine:</div>
+            <div>• Auto-detects delimiter (comma, semicolon, tab, pipe) & encoding</div>
+            <div>• Extracts privacy-safe profiles (min/max, cardinality, nulls)</div>
+            <div>• Automatically initializes immutable baseline snapshot df_v0</div>
           </div>
         </div>
       </div>

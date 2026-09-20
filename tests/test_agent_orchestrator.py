@@ -47,6 +47,7 @@ def test_chat_sync_successful_analytical_query(session_with_data: str):
     chat_payload = {
         "prompt": "What are the summary statistics for employee salaries?",
         "stream": False,
+        "provider": "mock",
     }
     res = client.post(f"/api/v1/sessions/{session_with_data}/chat", json=chat_payload)
     assert res.status_code == 200
@@ -66,6 +67,7 @@ def test_chat_sync_chart_generation(session_with_data: str):
     chat_payload = {
         "prompt": "Please plot a histogram of employee salary distribution",
         "stream": False,
+        "provider": "mock",
     }
     res = client.post(f"/api/v1/sessions/{session_with_data}/chat", json=chat_payload)
     assert res.status_code == 200
@@ -91,6 +93,7 @@ def test_chat_reflexion_self_correction(session_with_data: str):
         "prompt": "Please calculate values and trigger_error for testing",
         "stream": False,
         "max_attempts": 3,
+        "provider": "mock",
     }
     res = client.post(f"/api/v1/sessions/{session_with_data}/chat", json=chat_payload)
     assert res.status_code == 200
@@ -107,6 +110,7 @@ def test_chat_stream_sse_events(session_with_data: str):
     chat_payload = {
         "prompt": "Analyze salary trends and chart the results",
         "stream": True,
+        "provider": "mock",
     }
 
     events_received = []

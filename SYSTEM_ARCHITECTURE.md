@@ -56,7 +56,7 @@ C4Context
 C4Container
     title Container Architecture Diagram (C4 Level 2)
 
-    Container(spa, "Single Page App (SPA)", "Next.js 14, React, Tailwind, Plotly.js, Monaco", "Provides split-pane UI, streams chat, renders interactive client-side plots.")
+    Container(spa, "Single Page App (SPA)", "TanStack Router, Vite, React, Tailwind, Plotly.js, Monaco", "Provides split-pane UI, streams chat, renders interactive client-side plots.")
     
     Container(api_gateway, "API Gateway / BFF", "FastAPI / Python 3.11", "Terminates SSE/REST, validates auth, routes traffic, handles file upload presigning.")
     
@@ -203,7 +203,7 @@ erDiagram
 ```mermaid
 graph TB
     subgraph Internet ["Public Internet"]
-        Client["Browser Client (Next.js SPA)"]
+        Client["Browser Client (TanStack Router SPA)"]
     end
 
     subgraph Edge ["Cloudflare Edge Network"]
@@ -291,7 +291,7 @@ graph LR
 ```mermaid
 graph TD
     subgraph Telemetry_Sources ["Telemetry Sources"]
-        App["FastAPI & Next.js App"]
+        App["FastAPI & TanStack Web App"]
         Orch["LangGraph Orchestrator"]
         Sandbox["Sandbox Host Daemon"]
     end
@@ -412,7 +412,7 @@ Where:
 
 | Category | Recommended Choice | Alternatives Evaluated | Rationale & Trade-Off Analysis |
 | :--- | :--- | :--- | :--- |
-| **Frontend Framework** | **Next.js 14 (App Router)** | Vite + React SPA, Remix | Next.js offers native SSR for fast initial loads, robust API routes for BFF patterns, and deep TypeScript integration. |
+| **Frontend Framework** | **TanStack Router + Vite SPA** | Next.js, Remix | TanStack Router provides 100% type-safe search params and navigation, instant Vite HMR, and ultra-lightweight client-side rendering without SSR overhead. |
 | **API Gateway** | **FastAPI (Python 3.11)** | Node.js (NestJS), Go (Gin) | FastAPI enables seamless data type serialization with Pydantic, sharing schemas with the Python data orchestration pipeline. |
 | **Sandbox Isolation** | **gVisor (`runsc`)** | Standard Docker, Firecracker | Standard Docker lacks multi-tenant kernel isolation; Firecracker microVMs have a 250ms higher boot penalty than gVisor containers. |
 | **Primary Database** | **PostgreSQL 16** | MongoDB, DynamoDB | Relational integrity is mandatory for financial billing, workspaces, session checkpoints, and transactional chat audit logs. |

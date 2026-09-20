@@ -1,9 +1,13 @@
-"use client";
-
 import { useState, useCallback } from "react";
-import { ChatMessage, ReflexionStep } from "@/lib/types";
+import { ChatMessage, ReflexionStep, DatasetEventPayload } from "@/lib/types";
+import { queryClient } from "@/lib/queryClient";
 
-export function useChatStream() {
+interface UseChatStreamOptions {
+  onTurnComplete?: (metadata: any) => void;
+  onDatasetReceived?: (dataset: DatasetEventPayload) => void;
+}
+
+export function useChatStream(options: UseChatStreamOptions = {}) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [activeFigures, setActiveFigures] = useState<any[]>([]);
@@ -11,7 +15,7 @@ export function useChatStream() {
   const [activeStdout, setActiveStdout] = useState<string>("");
 
   const sendMessage = useCallback(
-    async (sessionId: string, prompt: string) => {
+    async (sessionId: string, prompt: string, provider?: string, model?: string) => {
       if (!prompt.trim() || isStreaming) return;
 
       const userMsgId = `usr_${Date.now()}`;
@@ -39,7 +43,7 @@ export function useChatStream() {
         const response = await fetch(`/api/v1/sessions/${sessionId}/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt, stream: true }),
+          body: JSON.stringify({ prompt, stream: true, provider, model }),
         });
 
         if (!response.ok || !response.body) {
@@ -79,6 +83,16 @@ export function useChatStream() {
               payload = JSON.parse(dataStr);
             } catch {
               continue;
+            }
+
+            // Tri-Channel Decoupled Processing
+            // Channel 2: Dataset update directly to TanStack Query Cache
+            if (eventType === "dataset") {
+              queryClient.setQueryData(["dataset", sessionId, "active"], payload);
+              if (payload.version_tag) {
+                queryClient.setQueryData(["dataset", sessionId, payload.version_tag], payload);
+              }
+              options.onDatasetReceived?.(payload);
             }
 
             setMessages((prev) =>
@@ -130,7 +144,19 @@ export function useChatStream() {
                       status: "synthesizing_insights",
                     };
 
+                  case "checkpoint_created":
+                    options.onTurnComplete?.(payload);
+                    queryClient.invalidateQueries({ queryKey: ["checkpoints", sessionId] });
+                    queryClient.invalidateQueries({ queryKey: ["schema", sessionId] });
+                    return {
+                      ...msg,
+                      activeVersion: payload.version_tag,
+                    };
+
                   case "turn_complete":
+                    options.onTurnComplete?.(payload);
+                    queryClient.invalidateQueries({ queryKey: ["checkpoints", sessionId] });
+                    queryClient.invalidateQueries({ queryKey: ["schema", sessionId] });
                     return {
                       ...msg,
                       status: "complete",
@@ -168,7 +194,7 @@ export function useChatStream() {
         setIsStreaming(false);
       }
     },
-    [isStreaming]
+    [isStreaming, options]
   );
 
   return {

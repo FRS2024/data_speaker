@@ -1,6 +1,6 @@
 """
 Multi-Provider LLM abstraction layer for the Autonomous AI Analyst.
-Supports Anthropic Claude 3.5 Sonnet, OpenAI GPT-4o, Google Gemini 1.5,
+Supports Google Gemini (via google-genai SDK), OpenAI GPT-4o, Anthropic Claude 3.5,
 and a deterministic MockProvider for zero-cost offline tests.
 """
 
@@ -9,8 +9,14 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import re
 from abc import ABC, abstractmethod
 from typing import Any, AsyncGenerator, Dict, List, Optional
+
+from dotenv import load_dotenv
+
+# Load local environment variables from .env
+load_dotenv()
 
 from services.api.agent.prompts import EXECUTE_PYTHON_TOOL
 
@@ -80,7 +86,6 @@ class MockProvider(BaseLLMProvider):
             )
 
         if "trigger_error" in last_msg:
-            # First attempt: intentional error to test reflexion loop
             code = "print(df['non_existent_column'])"
             return ToolCallResult(
                 name="execute_python",
@@ -131,64 +136,233 @@ class MockProvider(BaseLLMProvider):
 
 
 # ---------------------------------------------------------------------------
-# OpenAI Provider (GPT-4o / Azure / Compatible APIs)
+# Google Gemini Provider (Official google-genai SDK)
 # ---------------------------------------------------------------------------
 
-class OpenAIProvider(BaseLLMProvider):
-    """OpenAI API client supporting native tool-calling."""
+class GeminiProvider(BaseLLMProvider):
+    """
+    Google Gemini client powered by the official google-genai SDK.
+    Supports native tool-calling with `execute_python` and low-latency streaming.
+    """
 
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model: str = "gpt-4o",
-        base_url: Optional[str] = None,
+        model: Optional[str] = None,
     ) -> None:
-        from openai import AsyncOpenAI
-        self.client = AsyncOpenAI(api_key=api_key or os.environ.get("OPENAI_API_KEY"), base_url=base_url)
-        self.model = model
+        self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
+        self.model = model or os.environ.get("GEMINI_MODEL") or "gemini-2.0-flash"
+        self._client = None
+
+    def _get_client(self):
+        if not self._client:
+            from google import genai
+            self._client = genai.Client(api_key=self.api_key)
+        return self._client
 
     async def generate_code_call(
         self,
         messages: List[Dict[str, Any]],
         system_prompt: str,
     ) -> ToolCallResult:
-        full_messages = [{"role": "system", "content": system_prompt}] + messages
-        response = await self.client.chat.completions.create(
-            model=self.model,
-            messages=full_messages,
-            tools=[EXECUTE_PYTHON_TOOL],
-            tool_choice={"type": "function", "function": {"name": "execute_python"}},
-            temperature=0.1,
+        if not self.api_key:
+            return await MockProvider().generate_code_call(messages, system_prompt)
+
+        from google.genai import types
+
+        client = self._get_client()
+
+        # Build native tool declaration
+        function_decl = types.FunctionDeclaration(
+            name="execute_python",
+            description=(
+                "Execute Python analytical code in the stateful sandbox kernel where the "
+                "active dataset is pre-loaded as `df` (and named tables as `df_<table_name>`). "
+                "Captures stdout, stderr, execution duration, and interactive Plotly figures."
+            ),
+            parameters=types.Schema(
+                type=types.Type.OBJECT,
+                properties={
+                    "code": types.Schema(
+                        type=types.Type.STRING,
+                        description=(
+                            "Complete, executable Python code snippet to run in the sandbox. "
+                            "Print key numerical findings using print(). For charts, build interactive Plotly figures."
+                        ),
+                    ),
+                },
+                required=["code"],
+            ),
         )
+        tool = types.Tool(function_declarations=[function_decl])
 
-        choice = response.choices[0]
-        message = choice.message
-        thought = message.content or ""
+        # Map chat history to google.genai Content
+        contents: List[types.Content] = []
+        for m in messages:
+            role = "user" if m.get("role") in ["user", "system"] else "model"
+            text_val = m.get("content", "")
+            if text_val:
+                contents.append(types.Content(role=role, parts=[types.Part.from_text(text=text_val)]))
 
-        if message.tool_calls:
-            tool_call = message.tool_calls[0]
-            args = json.loads(tool_call.function.arguments)
-            code = args.get("code", "")
+        try:
+            response = await client.aio.models.generate_content(
+                model=self.model,
+                contents=contents,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_prompt,
+                    tools=[tool],
+                    temperature=0.1,
+                ),
+            )
+
+            thought = response.text or ""
+            code = ""
+
+            if response.function_calls:
+                for fc in response.function_calls:
+                    if fc.name == "execute_python":
+                        code = fc.args.get("code", "")
+                        break
+
+            # Fallback code block extraction if model provided Markdown
+            if not code and "```python" in thought:
+                match = re.search(r"```python\s*(.*?)\s*```", thought, re.DOTALL)
+                if match:
+                    code = match.group(1).strip()
+
+            if not code:
+                code = "# Data summary\nprint(df.head())\nprint(df.info())"
+
             return ToolCallResult(name="execute_python", code=code, thought=thought)
-
-        return ToolCallResult(name="execute_python", code="# No code generated", thought=thought)
+        except Exception as exc:
+            return ToolCallResult(
+                name="execute_python",
+                code=f"# Error calling Gemini API: {str(exc)}\nprint('Error: {str(exc)}')",
+                thought=f"Gemini API Exception: {str(exc)}",
+            )
 
     async def synthesize_explanation_stream(
         self,
         messages: List[Dict[str, Any]],
         system_prompt: str,
     ) -> AsyncGenerator[str, None]:
+        if not self.api_key:
+            async for token in MockProvider().synthesize_explanation_stream(messages, system_prompt):
+                yield token
+            return
+
+        from google.genai import types
+
+        client = self._get_client()
+        contents: List[types.Content] = []
+        for m in messages:
+            role = "user" if m.get("role") in ["user", "system"] else "model"
+            text_val = m.get("content", "")
+            if text_val:
+                contents.append(types.Content(role=role, parts=[types.Part.from_text(text=text_val)]))
+
+        try:
+            stream = await client.aio.models.generate_content_stream(
+                model=self.model,
+                contents=contents,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_prompt,
+                    temperature=0.3,
+                ),
+            )
+            async for chunk in stream:
+                if chunk.text:
+                    yield chunk.text
+        except Exception as exc:
+            yield f"\n⚠️ Gemini Streaming Error: {str(exc)}"
+
+
+# ---------------------------------------------------------------------------
+# OpenAI Provider (GPT-4o / GPT-4o-mini)
+# ---------------------------------------------------------------------------
+
+class OpenAIProvider(BaseLLMProvider):
+    """
+    OpenAI API client supporting native function calling and token streaming.
+    """
+
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        model: Optional[str] = None,
+        base_url: Optional[str] = None,
+    ) -> None:
+        from openai import AsyncOpenAI
+        self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
+        self.client = AsyncOpenAI(api_key=self.api_key or "sk-placeholder", base_url=base_url)
+        self.model = model or os.environ.get("OPENAI_MODEL") or "gpt-4o"
+
+    async def generate_code_call(
+        self,
+        messages: List[Dict[str, Any]],
+        system_prompt: str,
+    ) -> ToolCallResult:
+        if not self.api_key:
+            return await MockProvider().generate_code_call(messages, system_prompt)
+
         full_messages = [{"role": "system", "content": system_prompt}] + messages
-        stream = await self.client.chat.completions.create(
-            model=self.model,
-            messages=full_messages,
-            stream=True,
-            temperature=0.3,
-        )
-        async for chunk in stream:
-            delta = chunk.choices[0].delta.content if chunk.choices else ""
-            if delta:
-                yield delta
+        try:
+            response = await self.client.chat.completions.create(
+                model=self.model,
+                messages=full_messages,
+                tools=[EXECUTE_PYTHON_TOOL],
+                tool_choice={"type": "function", "function": {"name": "execute_python"}},
+                temperature=0.1,
+            )
+
+            choice = response.choices[0]
+            message = choice.message
+            thought = message.content or ""
+
+            if message.tool_calls:
+                tool_call = message.tool_calls[0]
+                args = json.loads(tool_call.function.arguments)
+                code = args.get("code", "")
+                return ToolCallResult(name="execute_python", code=code, thought=thought)
+
+            # Fallback code block extraction if formatted as text
+            if thought and "```python" in thought:
+                match = re.search(r"```python\s*(.*?)\s*```", thought, re.DOTALL)
+                if match:
+                    return ToolCallResult(name="execute_python", code=match.group(1).strip(), thought=thought)
+
+            return ToolCallResult(name="execute_python", code="# No code generated", thought=thought)
+        except Exception as exc:
+            return ToolCallResult(
+                name="execute_python",
+                code=f"# Error calling OpenAI API: {str(exc)}\nprint('Error: {str(exc)}')",
+                thought=f"OpenAI API Exception: {str(exc)}",
+            )
+
+    async def synthesize_explanation_stream(
+        self,
+        messages: List[Dict[str, Any]],
+        system_prompt: str,
+    ) -> AsyncGenerator[str, None]:
+        if not self.api_key:
+            async for token in MockProvider().synthesize_explanation_stream(messages, system_prompt):
+                yield token
+            return
+
+        full_messages = [{"role": "system", "content": system_prompt}] + messages
+        try:
+            stream = await self.client.chat.completions.create(
+                model=self.model,
+                messages=full_messages,
+                stream=True,
+                temperature=0.3,
+            )
+            async for chunk in stream:
+                delta = chunk.choices[0].delta.content if chunk.choices else ""
+                if delta:
+                    yield delta
+        except Exception as exc:
+            yield f"\n⚠️ OpenAI Streaming Error: {str(exc)}"
 
 
 # ---------------------------------------------------------------------------
@@ -201,17 +375,21 @@ class AnthropicProvider(BaseLLMProvider):
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model: str = "claude-3-5-sonnet-20241022",
+        model: Optional[str] = None,
     ) -> None:
         from anthropic import AsyncAnthropic
-        self.client = AsyncAnthropic(api_key=api_key or os.environ.get("ANTHROPIC_API_KEY"))
-        self.model = model
+        self.api_key = api_key or os.environ.get("ANTHROPIC_API_KEY")
+        self.client = AsyncAnthropic(api_key=self.api_key or "sk-ant-placeholder")
+        self.model = model or os.environ.get("ANTHROPIC_MODEL") or "claude-3-5-sonnet-20241022"
 
     async def generate_code_call(
         self,
         messages: List[Dict[str, Any]],
         system_prompt: str,
     ) -> ToolCallResult:
+        if not self.api_key:
+            return await MockProvider().generate_code_call(messages, system_prompt)
+
         tools = [
             {
                 "name": "execute_python",
@@ -220,104 +398,103 @@ class AnthropicProvider(BaseLLMProvider):
             }
         ]
 
-        # Format messages for Anthropic API
         anthropic_messages = [
             {"role": m["role"], "content": m["content"]}
             for m in messages if m["role"] in ["user", "assistant"]
         ]
 
-        response = await self.client.messages.create(
-            model=self.model,
-            system=system_prompt,
-            messages=anthropic_messages,
-            tools=tools,
-            tool_choice={"type": "tool", "name": "execute_python"},
-            max_tokens=2048,
-            temperature=0.1,
-        )
+        try:
+            response = await self.client.messages.create(
+                model=self.model,
+                system=system_prompt,
+                messages=anthropic_messages,
+                tools=tools,
+                tool_choice={"type": "tool", "name": "execute_python"},
+                max_tokens=2048,
+                temperature=0.1,
+            )
 
-        thought = ""
-        code = ""
-        for block in response.content:
-            if block.type == "text":
-                thought += block.text
-            elif block.type == "tool_use" and block.name == "execute_python":
-                code = block.input.get("code", "")
+            thought = ""
+            code = ""
+            for block in response.content:
+                if block.type == "text":
+                    thought += block.text
+                elif block.type == "tool_use" and block.name == "execute_python":
+                    code = block.input.get("code", "")
 
-        return ToolCallResult(name="execute_python", code=code, thought=thought)
+            return ToolCallResult(name="execute_python", code=code, thought=thought)
+        except Exception as exc:
+            return ToolCallResult(
+                name="execute_python",
+                code=f"# Error calling Anthropic API: {str(exc)}\nprint('Error: {str(exc)}')",
+                thought=f"Anthropic API Exception: {str(exc)}",
+            )
 
     async def synthesize_explanation_stream(
         self,
         messages: List[Dict[str, Any]],
         system_prompt: str,
     ) -> AsyncGenerator[str, None]:
+        if not self.api_key:
+            async for token in MockProvider().synthesize_explanation_stream(messages, system_prompt):
+                yield token
+            return
+
         anthropic_messages = [
             {"role": m["role"], "content": m["content"]}
             for m in messages if m["role"] in ["user", "assistant"]
         ]
 
-        async with self.client.messages.stream(
-            model=self.model,
-            system=system_prompt,
-            messages=anthropic_messages,
-            max_tokens=2048,
-            temperature=0.3,
-        ) as stream:
-            async for text in stream.text_stream:
-                yield text
-
-
-# ---------------------------------------------------------------------------
-# Google Gemini Provider
-# ---------------------------------------------------------------------------
-
-class GeminiProvider(BaseLLMProvider):
-    """Google Gemini client supporting function calling and streaming."""
-
-    def __init__(
-        self,
-        api_key: Optional[str] = None,
-        model: str = "gemini-1.5-pro",
-    ) -> None:
-        import google.generativeai as genai
-        key = api_key or os.environ.get("GEMINI_API_KEY")
-        if key:
-            genai.configure(api_key=key)
-        self.model_name = model
-
-    async def generate_code_call(
-        self,
-        messages: List[Dict[str, Any]],
-        system_prompt: str,
-    ) -> ToolCallResult:
-        # Fallback to Mock if unconfigured
-        mock = MockProvider()
-        return await mock.generate_code_call(messages, system_prompt)
-
-    async def synthesize_explanation_stream(
-        self,
-        messages: List[Dict[str, Any]],
-        system_prompt: str,
-    ) -> AsyncGenerator[str, None]:
-        mock = MockProvider()
-        async for token in mock.synthesize_explanation_stream(messages, system_prompt):
-            yield token
+        try:
+            async with self.client.messages.stream(
+                model=self.model,
+                system=system_prompt,
+                messages=anthropic_messages,
+                max_tokens=2048,
+                temperature=0.3,
+            ) as stream:
+                async for text in stream.text_stream:
+                    yield text
+        except Exception as exc:
+            yield f"\n⚠️ Anthropic Streaming Error: {str(exc)}"
 
 
 # ---------------------------------------------------------------------------
 # Factory Function
 # ---------------------------------------------------------------------------
 
-def get_llm_provider(provider_name: Optional[str] = None) -> BaseLLMProvider:
-    """Instantiate the configured LLM provider based on environment and availability."""
+def get_llm_provider(
+    provider_name: Optional[str] = None,
+    model_name: Optional[str] = None,
+) -> BaseLLMProvider:
+    """
+    Instantiate the configured LLM provider based on request parameter or environment.
+    Priority:
+    1. Explicitly requested provider ('gemini', 'openai', 'anthropic')
+    2. LLM_PROVIDER env variable
+    3. Auto-detect from GEMINI_API_KEY / OPENAI_API_KEY
+    4. Deterministic MockProvider (fallback)
+    """
+    load_dotenv()
+
     name = (provider_name or os.environ.get("LLM_PROVIDER", "")).lower().strip()
 
-    if name == "anthropic" or (not name and os.environ.get("ANTHROPIC_API_KEY")):
-        return AnthropicProvider()
-    if name == "openai" or (not name and os.environ.get("OPENAI_API_KEY")):
-        return OpenAIProvider()
-    if name == "gemini" or (not name and os.environ.get("GEMINI_API_KEY")):
-        return GeminiProvider()
+    if name in ("mock", "test", "deterministic"):
+        return MockProvider()
+    if name in ("gemini", "google"):
+        return GeminiProvider(model=model_name)
+    if name == "openai":
+        return OpenAIProvider(model=model_name)
+    if name in ("anthropic", "claude"):
+        return AnthropicProvider(model=model_name)
 
-    # Default to deterministic MockProvider for local dev and automated tests
+    # Auto-detection: prioritize Gemini, then OpenAI, then Anthropic
+    if os.environ.get("GEMINI_API_KEY"):
+        return GeminiProvider(model=model_name)
+    if os.environ.get("OPENAI_API_KEY"):
+        return OpenAIProvider(model=model_name)
+    if os.environ.get("ANTHROPIC_API_KEY"):
+        return AnthropicProvider(model=model_name)
+
+    # Default fallback
     return MockProvider()
