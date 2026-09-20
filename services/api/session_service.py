@@ -73,9 +73,19 @@ class SessionService:
         self._sandbox_clients[session_id] = client
         return client
 
-    def create_session(self, db: Session, title: str = "Untitled Analysis") -> DbSession:
+    def create_session(
+        self,
+        db: Session,
+        title: str = "Untitled Analysis",
+        workspace_id: str = "default_ws",
+        created_by: Optional[str] = None,
+    ) -> DbSession:
         """Create a new session record in the database."""
-        session_obj = DbSession(title=title)
+        session_obj = DbSession(
+            title=title,
+            workspace_id=workspace_id,
+            created_by=created_by,
+        )
         db.add(session_obj)
         db.commit()
         db.refresh(session_obj)

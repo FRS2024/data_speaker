@@ -25,6 +25,9 @@ dependencies = [
     "google-genai>=2.24.0",
     "python-dotenv>=1.2.3",
     "duckdb>=1.0.0",
+    "pyjwt>=2.8.0",
+    "bcrypt>=4.1.0",
+    "alembic>=1.13.0",
 ]
 
 [tool.uv.workspace]

@@ -1,6 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchSessions } from "@/lib/api";
+import { fetchSessions, authApi, getActiveWorkspace, setActiveWorkspace, getStoredTokens } from "@/lib/api";
+import { queryClient } from "@/lib/queryClient";
+import { User, Workspace } from "@/lib/types";
+import { AuthModal } from "./AuthModal";
+import { TeamDrawer } from "./TeamDrawer";
+import { Building2, Shield, User as UserIcon } from "lucide-react";
 
 interface SidebarProps {
   currentTab: string;
@@ -24,9 +29,41 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenSettings,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [activeWorkspace, setActiveWs] = useState<Workspace | null>(getActiveWorkspace());
+  const [isTeamDrawerOpen, setIsTeamDrawerOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  useEffect(() => {
+    const { accessToken } = getStoredTokens();
+    if (accessToken) {
+      authApi.me().then((data) => {
+        setCurrentUser(data.user);
+        if (data.workspaces.length > 0) {
+          const current = getActiveWorkspace();
+          const found = data.workspaces.find((w) => w.id === current?.id) || data.workspaces[0];
+          setActiveWs(found);
+          setActiveWorkspace(found);
+        }
+      }).catch(() => {
+        setCurrentUser(null);
+      });
+    }
+  }, []);
+
+  const handleWorkspaceChange = (ws: Workspace) => {
+    setActiveWs(ws);
+    queryClient.invalidateQueries({ queryKey: ["sessions-list"] });
+  };
+
+  const handleAuthSuccess = (user: User, ws: Workspace) => {
+    setCurrentUser(user);
+    setActiveWs(ws);
+    queryClient.invalidateQueries({ queryKey: ["sessions-list"] });
+  };
 
   const { data: sessions = [] } = useQuery({
-    queryKey: ["sessions-list"],
+    queryKey: ["sessions-list", activeWorkspace?.id],
     queryFn: () => fetchSessions(25),
     staleTime: 1000 * 30,
   });
@@ -265,33 +302,38 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
 
-      {/* Fares Profile Footer */}
+      {/* Interactive Account & Workspace Widget */}
       <div className="p-space-md bg-surface-container-lowest flex items-center justify-between border-t border-outline-variant/10 shrink-0">
-        <div className="flex items-center gap-space-sm overflow-hidden">
-          <img
-            alt="Fares Profile"
-            className="w-8 h-8 rounded-full object-cover border border-primary/20 shrink-0"
-            src="/assets/fares-avatar.png"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src =
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuD3oGy_JtI9L39Rh0ZQjW6_1atfTh0851i8WrMZSIJqy8RVSYn29DT7-4qKnUIEi6YiPRaOuE5WMhwYJb314V2St3KPtSarppuKUxR0-JLtyyHgszshSv5QwOspA9Tfq9D-Zwh1xyvgbKaXdN-9E6E5PAjSPVslSm6lvo-22sWNYfikdyoavQb8ZRxeUloQTrwEGwt9F-GmhCfIJ5WzSWwrkGdh8Py13KiZvH3LxqTWDI72LoxsaP8i";
-            }}
-          />
+        <button
+          type="button"
+          onClick={() => setIsTeamDrawerOpen(true)}
+          className="flex items-center gap-space-sm overflow-hidden text-left group w-full rounded-lg p-1 -m-1 hover:bg-surface-container transition-colors"
+          title="Open Workspace & Team Settings"
+        >
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shrink-0 border border-primary/20 shadow-sm">
+            {currentUser?.full_name ? currentUser.full_name[0].toUpperCase() : "G"}
+          </div>
           {!isCollapsed && (
-            <div className="flex flex-col min-w-0">
-              <span className="font-body-md text-body-md text-on-surface truncate leading-tight font-medium">
-                Fares
+            <div className="flex flex-col min-w-0 flex-1">
+              <span className="font-body-md text-body-md text-on-surface truncate leading-tight font-medium group-hover:text-primary transition-colors">
+                {currentUser?.full_name || "Guest Analyst"}
               </span>
-              <span className="font-label-caps text-[10px] text-tertiary uppercase tracking-wider">
-                PRO ANALYST
-              </span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="font-label-caps text-[9px] px-1.5 py-0.2 rounded bg-surface-container-high text-tertiary uppercase tracking-wider font-semibold">
+                  {activeWorkspace?.role?.toUpperCase() || (currentUser ? "ANALYST" : "DEMO")}
+                </span>
+                <span className="text-[10px] text-outline truncate max-w-[90px]">
+                  {activeWorkspace?.name || "Default Workspace"}
+                </span>
+              </div>
             </div>
           )}
-        </div>
+        </button>
+
         {!isCollapsed && onOpenSettings && (
           <button
             onClick={onOpenSettings}
-            className="p-space-xs rounded-full text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"
+            className="p-space-xs rounded-full text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors shrink-0 ml-1"
             type="button"
             title="Settings & Integrations"
           >
@@ -299,6 +341,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         )}
       </div>
+
+      {/* Slide-over Team & Workspace Drawer */}
+      <TeamDrawer
+        isOpen={isTeamDrawerOpen}
+        onClose={() => setIsTeamDrawerOpen(false)}
+        currentUser={currentUser}
+        activeWorkspace={activeWorkspace}
+        onWorkspaceChange={handleWorkspaceChange}
+        onOpenAuth={() => setIsAuthModalOpen(true)}
+      />
+
+      {/* Auth Modal (Login / Signup / Guest) */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onSuccess={handleAuthSuccess}
+      />
     </aside>
   );
 };

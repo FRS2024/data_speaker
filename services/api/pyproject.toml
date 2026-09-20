@@ -22,6 +22,9 @@ dependencies = [
     "anthropic>=0.28.0",
     "google-generativeai>=0.7.0",
     "duckdb>=1.0.0",
+    "pyjwt>=2.8.0",
+    "bcrypt>=4.1.0",
+    "alembic>=1.13.0",
 ]
 
 [build-system]

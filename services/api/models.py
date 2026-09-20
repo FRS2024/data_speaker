@@ -44,7 +44,87 @@ class DataFrameProfile(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# SQLModel Relational Database Tables
+# SQLModel Relational Database Tables: Auth & Multi-Tenancy
+# ---------------------------------------------------------------------------
+
+class User(SQLModel, table=True):
+    """User account model for authentication and identity."""
+    __tablename__ = "users"
+
+    id: str = Field(
+        default_factory=lambda: f"usr_{uuid.uuid4().hex[:12]}",
+        primary_key=True,
+        index=True,
+    )
+    email: str = Field(unique=True, index=True, nullable=False)
+    hashed_password: str = Field(nullable=False)
+    full_name: str = Field(default="")
+    avatar_url: Optional[str] = Field(default=None)
+    is_active: bool = Field(default=True)
+    is_superuser: bool = Field(default=False)
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+
+
+class Workspace(SQLModel, table=True):
+    """Multi-tenant workspace container for sessions and datasets."""
+    __tablename__ = "workspaces"
+
+    id: str = Field(
+        default_factory=lambda: f"ws_{uuid.uuid4().hex[:12]}",
+        primary_key=True,
+        index=True,
+    )
+    name: str = Field(default="My Workspace", nullable=False)
+    slug: str = Field(index=True, nullable=False)
+    plan_tier: str = Field(default="free")  # "free" | "pro" | "enterprise"
+    created_by: Optional[str] = Field(default=None, foreign_key="users.id")
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+    updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+
+
+class WorkspaceMember(SQLModel, table=True):
+    """User membership and role assignment within a workspace."""
+    __tablename__ = "workspace_members"
+
+    id: str = Field(
+        default_factory=lambda: f"wsm_{uuid.uuid4().hex[:12]}",
+        primary_key=True,
+        index=True,
+    )
+    workspace_id: str = Field(index=True, foreign_key="workspaces.id")
+    user_id: str = Field(index=True, foreign_key="users.id")
+    role: str = Field(default="analyst")  # "owner" | "admin" | "analyst" | "viewer"
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+
+
+class RefreshToken(SQLModel, table=True):
+    """Secure database-backed refresh tokens supporting instant revocation."""
+    __tablename__ = "refresh_tokens"
+
+    id: str = Field(
+        default_factory=lambda: f"rtk_{uuid.uuid4().hex[:12]}",
+        primary_key=True,
+        index=True,
+    )
+    user_id: str = Field(index=True, foreign_key="users.id")
+    token_hash: str = Field(unique=True, index=True, nullable=False)
+    expires_at: datetime = Field(nullable=False)
+    is_revoked: bool = Field(default=False)
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+
+
+# ---------------------------------------------------------------------------
+# SQLModel Relational Database Tables: Sessions & Analytics
 # ---------------------------------------------------------------------------
 
 class Session(SQLModel, table=True):
@@ -55,6 +135,15 @@ class Session(SQLModel, table=True):
         default_factory=lambda: f"sess_{uuid.uuid4().hex[:12]}",
         primary_key=True,
         index=True,
+    )
+    workspace_id: str = Field(
+        default="default_ws",
+        index=True,
+        foreign_key="workspaces.id",
+    )
+    created_by: Optional[str] = Field(
+        default=None,
+        foreign_key="users.id",
     )
     title: str = Field(default="Untitled Analysis")
     active_dataframe_version: str = Field(default="df_v0")
@@ -314,4 +403,80 @@ class SessionRelationsResponse(BaseModel):
     session_id: str
     tables: List[str] = []
     relations: List[ForeignKeyRelation] = []
+
+
+# ---------------------------------------------------------------------------
+# Auth & Multi-Tenancy Request / Response Schemas
+# ---------------------------------------------------------------------------
+
+class UserSignUpRequest(BaseModel):
+    email: str
+    password: str
+    full_name: Optional[str] = ""
+
+
+class UserLoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class UserResponse(BaseModel):
+    id: str
+    email: str
+    full_name: str
+    avatar_url: Optional[str] = None
+    is_active: bool = True
+    is_superuser: bool = False
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class WorkspaceResponse(BaseModel):
+    id: str
+    name: str
+    slug: str
+    plan_tier: str = "free"
+    role: str = "owner"
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AuthTokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    expires_in: int = 3600  # 60 minutes
+    user: UserResponse
+    active_workspace: WorkspaceResponse
+
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
+
+
+class WorkspaceCreateRequest(BaseModel):
+    name: str
+
+
+class WorkspaceMemberResponse(BaseModel):
+    id: str
+    workspace_id: str
+    user_id: str
+    email: str
+    full_name: str
+    role: str
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class InviteMemberRequest(BaseModel):
+    email: str
+    role: str = "analyst"  # "admin" | "analyst" | "viewer"
+
+
+class UpdateMemberRoleRequest(BaseModel):
+    role: str  # "admin" | "analyst" | "viewer"
 

@@ -21,6 +21,8 @@ from fastapi.responses import StreamingResponse
 from sqlmodel import Session, select
 
 from services.api.agent.orchestrator import agent_orchestrator
+from services.api.auth import AuthContext, get_auth_context, get_current_user, require_role
+from services.api.connectors import CONNECTORS
 from services.api.database import create_db_and_tables, get_db_session
 from services.api.exporter import export_engine
 from services.api.models import (
@@ -42,8 +44,9 @@ from services.api.models import (
     SqlQueryRequest,
     SqlQueryResponse,
 )
-from services.api.connectors import CONNECTORS
 from services.api.profiler import clean_table_name
+from services.api.routers.auth import router as auth_router
+from services.api.routers.workspaces import router as workspaces_router
 from services.api.session_service import DATA_DIR, SANDBOX_URL, session_service
 from services.api.sql_engine import duckdb_engine
 
@@ -70,6 +73,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount authentication and workspace management routers
+app.include_router(auth_router)
+app.include_router(workspaces_router)
 
 
 @app.get("/health", tags=["System"])
@@ -136,11 +143,17 @@ def get_providers_status() -> Dict[str, Any]:
 @app.post("/api/v1/sessions", response_model=SessionCreateResponse, status_code=status.HTTP_201_CREATED, tags=["Sessions"])
 def create_session(
     payload: Optional[Dict[str, str]] = None,
+    ctx: AuthContext = Depends(require_role("analyst")),
     db: Session = Depends(get_db_session),
 ) -> SessionCreateResponse:
-    """Create a new data analysis session."""
+    """Create a new data analysis session scoped to the active workspace."""
     title = (payload or {}).get("title", "Untitled Analysis")
-    session_obj = session_service.create_session(db, title=title)
+    session_obj = session_service.create_session(
+        db,
+        title=title,
+        workspace_id=ctx.workspace.id,
+        created_by=ctx.user.id,
+    )
     return SessionCreateResponse(
         session_id=session_obj.id,
         title=session_obj.title,
@@ -152,15 +165,22 @@ def create_session(
 @app.get("/api/v1/sessions", tags=["Sessions"])
 def list_sessions(
     limit: int = 20,
+    ctx: AuthContext = Depends(get_auth_context),
     db: Session = Depends(get_db_session),
 ) -> List[Dict[str, Any]]:
-    """List recent sessions ordered by updated_at descending."""
-    sessions = db.exec(select(DbSession).order_by(DbSession.updated_at.desc()).limit(limit)).all()
+    """List recent sessions for the active workspace ordered by updated_at descending."""
+    sessions = db.exec(
+        select(DbSession)
+        .where(DbSession.workspace_id == ctx.workspace.id)
+        .order_by(DbSession.updated_at.desc())
+        .limit(limit)
+    ).all()
     return [
         {
             "session_id": s.id,
             "title": s.title,
             "active_dataframe_version": s.active_dataframe_version,
+            "workspace_id": s.workspace_id,
             "created_at": s.created_at.isoformat() if s.created_at else None,
             "updated_at": s.updated_at.isoformat() if s.updated_at else None,
         }
@@ -209,6 +229,7 @@ def get_session(
 async def upload_file(
     session_id: str,
     file: UploadFile = File(...),
+    ctx: AuthContext = Depends(require_role("analyst")),
     db: Session = Depends(get_db_session),
 ) -> FileUploadResponse:
     """
@@ -286,6 +307,7 @@ def get_session_dataset(
 async def execute_code(
     session_id: str,
     request: CodeExecutionRequest,
+    ctx: AuthContext = Depends(require_role("analyst")),
     db: Session = Depends(get_db_session),
 ) -> CodeExecutionResponse:
     """
@@ -311,6 +333,7 @@ async def execute_code(
 @app.post("/api/v1/sessions/{session_id}/reset", tags=["Execution"])
 async def reset_session_sandbox(
     session_id: str,
+    ctx: AuthContext = Depends(require_role("analyst")),
     db: Session = Depends(get_db_session),
 ) -> Dict[str, Any]:
     """Reset the sandbox kernel state, prune incremental checkpoints, and re-hydrate df_v0."""
@@ -347,6 +370,7 @@ def list_session_checkpoints(
 async def revert_session_version(
     session_id: str,
     payload: RevertVersionRequest,
+    ctx: AuthContext = Depends(require_role("analyst")),
     db: Session = Depends(get_db_session),
 ) -> RevertVersionResponse:
     """Non-destructively roll back the active DataFrame to a specified checkpoint version."""
@@ -445,6 +469,7 @@ def get_dataset(
 async def chat_with_data(
     session_id: str,
     request: ChatRequest,
+    ctx: AuthContext = Depends(require_role("analyst")),
     db: Session = Depends(get_db_session),
 ):
     """
@@ -493,6 +518,7 @@ async def chat_with_data(
 def execute_sql_query(
     session_id: str,
     request: SqlQueryRequest,
+    ctx: AuthContext = Depends(require_role("analyst")),
     db: Session = Depends(get_db_session),
 ) -> SqlQueryResponse:
     """
@@ -510,6 +536,7 @@ def execute_sql_query(
 def save_sql_as_checkpoint(
     session_id: str,
     request: SqlCheckpointRequest,
+    ctx: AuthContext = Depends(require_role("analyst")),
     db: Session = Depends(get_db_session),
 ) -> Dict[str, Any]:
     """
@@ -579,6 +606,7 @@ async def import_warehouse_dataset(
     session_id: str,
     connector_type: str,
     payload: Dict[str, str],
+    ctx: AuthContext = Depends(require_role("analyst")),
     db: Session = Depends(get_db_session),
 ) -> FileUploadResponse:
     """
