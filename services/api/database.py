@@ -93,6 +93,14 @@ def patch_sqlite_columns() -> None:
                     conn.execute(text("ALTER TABLE sessions ADD COLUMN workspace_id VARCHAR DEFAULT 'default_ws'"))
                 if "created_by" not in cols:
                     conn.execute(text("ALTER TABLE sessions ADD COLUMN created_by VARCHAR DEFAULT NULL"))
+
+        if insp.has_table("chat_turns"):
+            turn_cols = [c["name"] for c in insp.get_columns("chat_turns")]
+            with engine.begin() as conn:
+                if "critic_review_json" not in turn_cols:
+                    conn.execute(text("ALTER TABLE chat_turns ADD COLUMN critic_review_json TEXT DEFAULT NULL"))
+                if "debate_history_json" not in turn_cols:
+                    conn.execute(text("ALTER TABLE chat_turns ADD COLUMN debate_history_json TEXT DEFAULT NULL"))
     except Exception:
         pass
 

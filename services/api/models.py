@@ -208,6 +208,8 @@ class ChatTurn(SQLModel, table=True):
     stderr: Optional[str] = Field(default=None)
     status: str = Field(default="success")  # "success" | "error" | "timeout"
     execution_time_ms: Optional[int] = Field(default=None)
+    critic_review_json: Optional[str] = Field(default=None, description="JSON serialized CriticReview")
+    debate_history_json: Optional[str] = Field(default=None, description="JSON serialized debate turns")
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
@@ -300,6 +302,7 @@ class ChatRequest(BaseModel):
     max_attempts: int = 3
     provider: Optional[str] = None
     model: Optional[str] = None
+    swarm_mode: bool = False
 
 
 class ChatTurnResponse(BaseModel):
@@ -670,5 +673,33 @@ class AIPolishResponse(BaseModel):
     executive_summary: str
     polished_bullets: List[str]
     recommendations: List[str]
+
+
+# ============================================================================
+# Track D: Multi-Agent Critic & Statistician Debate Swarm Models
+# ============================================================================
+
+class CriticReview(BaseModel):
+    verdict: str = "approved"  # "approved" | "warning" | "requires_revision"
+    confidence_score: float = 100.0  # 0.0 - 100.0
+    statistical_warnings: List[str] = []
+    critique: str = ""
+    sample_size_ok: bool = True
+    detected_fallacies: List[str] = []
+    suggested_fix: Optional[str] = None
+
+
+class DebateExchange(BaseModel):
+    turn_num: int
+    speaker: str  # "analyst" | "critic"
+    message: str
+    code: Optional[str] = None
+
+
+class SwarmPhaseEvent(BaseModel):
+    phase: str  # "analyst_planning" | "critic_pre_review" | "sandbox_executing" | "critic_post_audit" | "debate_turn" | "synthesizing"
+    message: str
+    step: int
+
 
 

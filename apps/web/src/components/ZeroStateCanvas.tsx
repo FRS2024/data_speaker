@@ -12,6 +12,8 @@ interface ZeroStateCanvasProps {
   selectedProvider?: string;
   onSelectProvider?: (provider: string) => void;
   providersStatus?: any;
+  isSwarmMode?: boolean;
+  onToggleSwarmMode?: () => void;
 }
 
 export const ZeroStateCanvas: React.FC<ZeroStateCanvasProps> = ({
@@ -25,6 +27,8 @@ export const ZeroStateCanvas: React.FC<ZeroStateCanvasProps> = ({
   selectedProvider,
   onSelectProvider,
   providersStatus,
+  isSwarmMode = false,
+  onToggleSwarmMode,
 }) => {
   const suggestedQueries = [
     {
@@ -137,6 +141,8 @@ export const ZeroStateCanvas: React.FC<ZeroStateCanvasProps> = ({
           selectedProvider={selectedProvider}
           onSelectProvider={onSelectProvider}
           providersStatus={providersStatus}
+          isSwarmMode={isSwarmMode}
+          onToggleSwarmMode={onToggleSwarmMode}
         />
 
         {/* Curated Prompt Starters */}

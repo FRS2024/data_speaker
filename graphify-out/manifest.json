@@ -132,21 +132,21 @@
     "semantic_hash": ""
   },
   "services/api/database.py": {
-    "mtime": 1789944402.8290672,
-    "seen": 1789944900.8140006,
-    "ast_hash": "55acb28696a59a0220f7d1f02c01425e",
+    "mtime": 1790197152.9091723,
+    "seen": 1790197822.5680773,
+    "ast_hash": "c67c581a3c3fb23a75b0c958611e0577",
     "semantic_hash": ""
   },
   "services/api/main.py": {
-    "mtime": 1790194022.2305272,
-    "seen": 1790195031.8217204,
-    "ast_hash": "1ff61570c3f0d9a86c1b52f01c5cb842",
+    "mtime": 1790196053.6027362,
+    "seen": 1790197822.5680773,
+    "ast_hash": "96c7ce91ff9744f08d4532107bdaf56b",
     "semantic_hash": ""
   },
   "services/api/models.py": {
-    "mtime": 1790193888.9711404,
-    "seen": 1790195031.8217204,
-    "ast_hash": "4106df09f59588f593c164dfd7b1ca4e",
+    "mtime": 1790195749.198212,
+    "seen": 1790197822.5680773,
+    "ast_hash": "0201dae4e0d078cfcb513f604a975c85",
     "semantic_hash": ""
   },
   "services/api/profiler.py": {
@@ -174,9 +174,9 @@
     "semantic_hash": ""
   },
   "services/api/agent/orchestrator.py": {
-    "mtime": 1789850985.158016,
-    "seen": 1789939900.9178936,
-    "ast_hash": "864354fb4727b211cb7f73e147c4bca1",
+    "mtime": 1790196045.443247,
+    "seen": 1790197822.5680773,
+    "ast_hash": "ef7933d49b4ce5e576af57547e045c22",
     "semantic_hash": ""
   },
   "services/api/agent/prompts.py": {
@@ -216,9 +216,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/hooks/useChatStream.ts": {
-    "mtime": 1789850704.7119722,
-    "seen": 1789939900.9178936,
-    "ast_hash": "c84c3e4e8850790c6f93bbc18a3f385b",
+    "mtime": 1790196326.0322104,
+    "seen": 1790197822.5680773,
+    "ast_hash": "5b946b808f7c398a88b95eee3fa1c287",
     "semantic_hash": ""
   },
   "apps/web/tailwind.config.ts": {
@@ -372,15 +372,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/ActiveChatView.tsx": {
-    "mtime": 1789850813.5668244,
-    "seen": 1789939900.9178936,
-    "ast_hash": "d49ff1e69db617d883955ac72413530c",
+    "mtime": 1790196467.39364,
+    "seen": 1790197822.5680773,
+    "ast_hash": "a26e23ed49309bddd014474a48f94815",
     "semantic_hash": ""
   },
   "apps/web/src/components/FloatingActionDock.tsx": {
-    "mtime": 1789850784.5529573,
-    "seen": 1789939900.9178936,
-    "ast_hash": "e601756cda7eba2d6e9845832d534a5f",
+    "mtime": 1790196436.782724,
+    "seen": 1790197822.5680773,
+    "ast_hash": "fa6c57009cbb67543d76dc49fa6c7f47",
     "semantic_hash": ""
   },
   "apps/web/src/components/Header.tsx": {
@@ -426,9 +426,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/ZeroStateCanvas.tsx": {
-    "mtime": 1789850797.026505,
-    "seen": 1789939900.9178936,
-    "ast_hash": "07a0843e5651bcc0d353be1a87e44fbd",
+    "mtime": 1790196688.031438,
+    "seen": 1790197822.5680773,
+    "ast_hash": "651e0152994b26379e0085506ef402cf",
     "semantic_hash": ""
   },
   "apps/web/src/main.tsx": {
@@ -438,9 +438,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/router.tsx": {
-    "mtime": 1790194142.3151698,
-    "seen": 1790195031.8217204,
-    "ast_hash": "6aceb2bb5ddd7ca0ea9ef737aac8c680",
+    "mtime": 1790196726.0078826,
+    "seen": 1790197822.5680773,
+    "ast_hash": "313edd60a4ad3f51c40bea26c421aad5",
     "semantic_hash": ""
   },
   "apps/web/vite.config.ts": {
@@ -624,9 +624,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/lib/types.ts": {
-    "mtime": 1790194033.1733181,
-    "seen": 1790195031.8217204,
-    "ast_hash": "eda0633740849cca9372bea7b6d18e27",
+    "mtime": 1790196084.764566,
+    "seen": 1790197822.5680773,
+    "ast_hash": "a42908a7b23071a857678e0796c999a0",
     "semantic_hash": ""
   },
   "services/api/automl.py": {
@@ -693,6 +693,42 @@
     "mtime": 1790194541.3739574,
     "seen": 1790195031.822717,
     "ast_hash": "dc6233082cd3f14a5e207e38490d2271",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/StatisticalPeerReviewCard.tsx": {
+    "mtime": 1790196402.2770064,
+    "seen": 1790197822.5680773,
+    "ast_hash": "28018c05d1eabd75a654c67bcb030ee4",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/SwarmWorkflowStepper.tsx": {
+    "mtime": 1790196390.799224,
+    "seen": 1790197822.5680773,
+    "ast_hash": "0d405bd8dc206619104bfaa54e0d5989",
+    "semantic_hash": ""
+  },
+  "services/api/agent/critic.py": {
+    "mtime": 1790197157.9666455,
+    "seen": 1790197822.5680773,
+    "ast_hash": "7e10cb55a2e4b500ef8d6646bfe9a9c5",
+    "semantic_hash": ""
+  },
+  "services/api/agent/swarm.py": {
+    "mtime": 1790195520.474908,
+    "seen": 1790197822.5680773,
+    "ast_hash": "62681c45902d5d139e81986c4a64e920",
+    "semantic_hash": ""
+  },
+  "tests/test_critic_guardrails.py": {
+    "mtime": 1790196789.369308,
+    "seen": 1790197822.5680773,
+    "ast_hash": "100de61f092cd56c6b6a2e079324da16",
+    "semantic_hash": ""
+  },
+  "tests/test_swarm_orchestrator.py": {
+    "mtime": 1790196823.08963,
+    "seen": 1790197822.5680773,
+    "ast_hash": "ab60197fe39287b57876444c953221d9",
     "semantic_hash": ""
   }
 }

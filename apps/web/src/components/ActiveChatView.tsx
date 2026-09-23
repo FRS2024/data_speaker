@@ -1,6 +1,8 @@
 import React, { useRef, useEffect } from "react";
-import { ChatMessage } from "@/lib/types";
+import { ChatMessage, SwarmPhaseEvent } from "@/lib/types";
 import { FloatingActionDock } from "./FloatingActionDock";
+import { SwarmWorkflowStepper } from "./SwarmWorkflowStepper";
+import { StatisticalPeerReviewCard } from "./StatisticalPeerReviewCard";
 import Plot from "react-plotly.js";
 
 interface ActiveChatViewProps {
@@ -14,6 +16,9 @@ interface ActiveChatViewProps {
   selectedProvider?: string;
   onSelectProvider?: (provider: string) => void;
   providersStatus?: any;
+  activeSwarmPhase?: SwarmPhaseEvent | null;
+  isSwarmMode?: boolean;
+  onToggleSwarmMode?: () => void;
 }
 
 export const ActiveChatView: React.FC<ActiveChatViewProps> = ({
@@ -27,6 +32,9 @@ export const ActiveChatView: React.FC<ActiveChatViewProps> = ({
   selectedProvider,
   onSelectProvider,
   providersStatus,
+  activeSwarmPhase,
+  isSwarmMode = false,
+  onToggleSwarmMode,
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -43,6 +51,13 @@ export const ActiveChatView: React.FC<ActiveChatViewProps> = ({
         ref={scrollRef}
         className="flex-1 overflow-y-auto px-space-md sm:px-space-xl py-space-lg flex flex-col gap-space-lg max-w-5xl mx-auto w-full"
       >
+        {/* Sticky/Top Swarm Stepper if Swarm mode enabled or active */}
+        {(isSwarmMode || activeSwarmPhase) && (
+          <div className="sticky top-0 z-10 pb-1">
+            <SwarmWorkflowStepper currentPhase={activeSwarmPhase} isStreaming={isStreaming} />
+          </div>
+        )}
+
         {messages.map((msg) => {
           if (msg.role === "user") {
             return (
@@ -189,6 +204,14 @@ export const ActiveChatView: React.FC<ActiveChatViewProps> = ({
                   </div>
                 )}
 
+                {/* Statistical Peer Review Card & Debate History */}
+                {(msg.criticReview || (msg.debateHistory && msg.debateHistory.length > 0)) && (
+                  <StatisticalPeerReviewCard
+                    criticReview={msg.criticReview}
+                    debateHistory={msg.debateHistory}
+                  />
+                )}
+
                 {/* Natural Insights Content */}
                 {msg.content && (
                   <div className="p-space-md rounded-2xl rounded-tl-none bg-surface-container text-on-surface font-body-md text-body-md shadow-md leading-relaxed whitespace-pre-wrap flex flex-col gap-2">
@@ -244,6 +267,8 @@ export const ActiveChatView: React.FC<ActiveChatViewProps> = ({
           selectedProvider={selectedProvider}
           onSelectProvider={onSelectProvider}
           providersStatus={providersStatus}
+          isSwarmMode={isSwarmMode}
+          onToggleSwarmMode={onToggleSwarmMode}
         />
       </div>
     </div>

@@ -11,6 +11,8 @@ interface FloatingActionDockProps {
   selectedProvider?: string;
   onSelectProvider?: (provider: string) => void;
   providersStatus?: any;
+  isSwarmMode?: boolean;
+  onToggleSwarmMode?: () => void;
 }
 
 export const FloatingActionDock: React.FC<FloatingActionDockProps> = ({
@@ -24,6 +26,8 @@ export const FloatingActionDock: React.FC<FloatingActionDockProps> = ({
   selectedProvider = "gemini",
   onSelectProvider,
   providersStatus,
+  isSwarmMode = false,
+  onToggleSwarmMode,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
@@ -277,6 +281,35 @@ export const FloatingActionDock: React.FC<FloatingActionDockProps> = ({
                   </div>
                 )}
               </div>
+
+              {/* Swarm Debate Mode Toggle */}
+              {onToggleSwarmMode && (
+                <button
+                  type="button"
+                  onClick={onToggleSwarmMode}
+                  className={`h-9 px-3 rounded-full flex items-center gap-1.5 transition-all text-xs font-medium border ${
+                    isSwarmMode
+                      ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/50 shadow-[0_0_12px_rgba(99,102,241,0.25)]"
+                      : "bg-surface-container hover:bg-surface-container-high text-on-surface-variant border-outline-variant/20 hover:text-on-surface"
+                  }`}
+                  title={
+                    isSwarmMode
+                      ? "Swarm Debate Active: Analyst + Statistician Peer Review"
+                      : "Enable Dual-Agent Swarm Debate Mode"
+                  }
+                >
+                  <span
+                    className={`material-symbols-outlined text-[17px] ${
+                      isSwarmMode ? "text-indigo-400" : "text-on-surface-variant"
+                    }`}
+                  >
+                    groups
+                  </span>
+                  <span className="hidden sm:inline font-mono">
+                    {isSwarmMode ? "Swarm: ON" : "Swarm: OFF"}
+                  </span>
+                </button>
+              )}
 
               {/* Audio Dictation Trigger */}
               <button

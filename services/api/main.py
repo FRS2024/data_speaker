@@ -499,6 +499,7 @@ async def chat_with_data(
                 max_attempts=request.max_attempts,
                 provider_name=request.provider,
                 model_name=request.model,
+                swarm_mode=request.swarm_mode,
             ),
             media_type="text/event-stream",
             headers={
@@ -515,6 +516,7 @@ async def chat_with_data(
         max_attempts=request.max_attempts,
         provider_name=request.provider,
         model_name=request.model,
+        swarm_mode=request.swarm_mode,
     )
     return response_data
 

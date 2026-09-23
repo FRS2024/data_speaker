@@ -51,6 +51,10 @@ export interface ChatMessage {
   reflexionSteps?: ReflexionStep[];
   durationMs?: number;
   activeVersion?: string;
+  // Track D additions
+  criticReview?: CriticReview;
+  debateHistory?: DebateExchange[];
+  swarmPhase?: SwarmPhaseEvent;
 }
 
 export interface SchemaResponse {
@@ -384,6 +388,46 @@ export interface AIPolishResponse {
   executive_summary: string;
   polished_bullets: string[];
   recommendations: string[];
+}
+
+// ---------------------------------------------------------------------------
+// Track D: Multi-Agent Critic & Debate Swarm Types
+// ---------------------------------------------------------------------------
+
+export interface CriticReview {
+  review_stage: "pre_execution" | "post_execution";
+  verdict: "passed" | "requires_revision" | "flagged_with_caveats";
+  confidence_score: number; // 0.0 - 1.0
+  critique: string;
+  specific_guidance?: string;
+  detected_anti_patterns: string[];
+  caveats: string[];
+  metrics_verified: Record<string, any>;
+}
+
+export interface DebateExchange {
+  round: number;
+  role: "analyst" | "critic";
+  argument: string;
+  revised_code?: string;
+  verdict?: "passed" | "requires_revision" | "flagged_with_caveats";
+  confidence_score?: number;
+  timestamp: string;
+}
+
+export interface SwarmPhaseEvent {
+  phase:
+    | "analyst_draft"
+    | "pre_critic_audit"
+    | "analyst_debate"
+    | "sandbox_execution"
+    | "post_critic_verification"
+    | "executive_synthesis";
+  agent: "Analyst Agent" | "Statistician Critic" | "Executive Synthesizer" | "Execution Sandbox";
+  description: string;
+  round?: number;
+  verdict?: string;
+  confidence_score?: number;
 }
 
 

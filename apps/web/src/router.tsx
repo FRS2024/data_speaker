@@ -58,6 +58,7 @@ const RootLayout: React.FC = () => {
   const [promptInput, setPromptInput] = useState<string>("");
   const [isReverting, setIsReverting] = useState<boolean>(false);
   const [selectedProvider, setSelectedProvider] = useState<string>("gemini");
+  const [isSwarmMode, setIsSwarmMode] = useState<boolean>(false);
 
   const { data: providersStatus } = useQuery({
     queryKey: ["providers-status"],
@@ -148,6 +149,7 @@ const RootLayout: React.FC = () => {
     messages,
     isStreaming,
     activeFigures,
+    activeSwarmPhase,
     sendMessage,
   } = useChatStream({
     onTurnComplete: () => {
@@ -165,7 +167,7 @@ const RootLayout: React.FC = () => {
     if (!promptInput.trim() || !activeSessionId || isStreaming) return;
     const p = promptInput;
     setPromptInput("");
-    sendMessage(activeSessionId, p, selectedProvider);
+    sendMessage(activeSessionId, p, selectedProvider, undefined, isSwarmMode);
   };
 
   const handleRollback = async (versionTag: string) => {
@@ -232,6 +234,8 @@ const RootLayout: React.FC = () => {
                 selectedProvider={selectedProvider}
                 onSelectProvider={setSelectedProvider}
                 providersStatus={providersStatus}
+                isSwarmMode={isSwarmMode}
+                onToggleSwarmMode={() => setIsSwarmMode(!isSwarmMode)}
               />
             ) : (
               <ActiveChatView
@@ -245,6 +249,9 @@ const RootLayout: React.FC = () => {
                 selectedProvider={selectedProvider}
                 onSelectProvider={setSelectedProvider}
                 providersStatus={providersStatus}
+                activeSwarmPhase={activeSwarmPhase}
+                isSwarmMode={isSwarmMode}
+                onToggleSwarmMode={() => setIsSwarmMode(!isSwarmMode)}
               />
             )
           )}

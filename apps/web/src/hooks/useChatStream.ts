@@ -1,5 +1,12 @@
 import { useState, useCallback } from "react";
-import { ChatMessage, ReflexionStep, DatasetEventPayload } from "@/lib/types";
+import {
+  ChatMessage,
+  ReflexionStep,
+  DatasetEventPayload,
+  CriticReview,
+  DebateExchange,
+  SwarmPhaseEvent,
+} from "@/lib/types";
 import { queryClient } from "@/lib/queryClient";
 
 interface UseChatStreamOptions {
@@ -13,9 +20,10 @@ export function useChatStream(options: UseChatStreamOptions = {}) {
   const [activeFigures, setActiveFigures] = useState<any[]>([]);
   const [activeCode, setActiveCode] = useState<string>("");
   const [activeStdout, setActiveStdout] = useState<string>("");
+  const [activeSwarmPhase, setActiveSwarmPhase] = useState<SwarmPhaseEvent | null>(null);
 
   const sendMessage = useCallback(
-    async (sessionId: string, prompt: string, provider?: string, model?: string) => {
+    async (sessionId: string, prompt: string, provider?: string, model?: string, swarmMode?: boolean) => {
       if (!prompt.trim() || isStreaming) return;
 
       const userMsgId = `usr_${Date.now()}`;
@@ -37,13 +45,14 @@ export function useChatStream(options: UseChatStreamOptions = {}) {
       };
 
       setMessages((prev) => [...prev, userMsg, initialAssistantMsg]);
+      setActiveSwarmPhase(null);
       setIsStreaming(true);
 
       try {
         const response = await fetch(`/api/v1/sessions/${sessionId}/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt, stream: true, provider, model }),
+          body: JSON.stringify({ prompt, stream: true, provider, model, swarm_mode: swarmMode ?? false }),
         });
 
         if (!response.ok || !response.body) {
@@ -137,6 +146,25 @@ export function useChatStream(options: UseChatStreamOptions = {}) {
                       reflexionSteps: [...currentSteps, step],
                     };
 
+                  case "swarm_phase":
+                    setActiveSwarmPhase(payload);
+                    return {
+                      ...msg,
+                      swarmPhase: payload,
+                    };
+
+                  case "critic_review":
+                    return {
+                      ...msg,
+                      criticReview: payload,
+                    };
+
+                  case "debate_step":
+                    return {
+                      ...msg,
+                      debateHistory: [...(msg.debateHistory || []), payload],
+                    };
+
                   case "token":
                     return {
                       ...msg,
@@ -154,6 +182,7 @@ export function useChatStream(options: UseChatStreamOptions = {}) {
                     };
 
                   case "turn_complete":
+                    setActiveSwarmPhase(null);
                     options.onTurnComplete?.(payload);
                     queryClient.invalidateQueries({ queryKey: ["checkpoints", sessionId] });
                     queryClient.invalidateQueries({ queryKey: ["schema", sessionId] });
@@ -165,6 +194,7 @@ export function useChatStream(options: UseChatStreamOptions = {}) {
                     };
 
                   case "error":
+                    setActiveSwarmPhase(null);
                     return {
                       ...msg,
                       status: "error",
@@ -179,6 +209,7 @@ export function useChatStream(options: UseChatStreamOptions = {}) {
           }
         }
       } catch (err: any) {
+        setActiveSwarmPhase(null);
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === assistantMsgId
@@ -203,6 +234,7 @@ export function useChatStream(options: UseChatStreamOptions = {}) {
     activeFigures,
     activeCode,
     activeStdout,
+    activeSwarmPhase,
     sendMessage,
     setMessages,
   };

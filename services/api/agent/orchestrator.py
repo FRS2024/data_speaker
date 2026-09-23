@@ -42,12 +42,25 @@ class AgentOrchestrator:
         max_attempts: int = 3,
         provider_name: Optional[str] = None,
         model_name: Optional[str] = None,
+        swarm_mode: bool = False,
     ) -> AsyncGenerator[str, None]:
         """
         Execute an autonomous analytical turn with real-time SSE streaming.
         Emits token, code_generated, execution_status, execution_stdout,
-        chart_generated, reflexion_step, and turn_complete events.
+        chart_generated, reflexion_step, critic_review, and turn_complete events.
         """
+        if swarm_mode:
+            from services.api.agent.swarm import swarm_coordinator
+            async for chunk in swarm_coordinator.run_swarm_turn(
+                db=db,
+                session_id=session_id,
+                user_prompt=user_prompt,
+                provider_name=provider_name,
+                model_name=model_name,
+            ):
+                yield chunk
+            return
+
         active_provider = (
             get_llm_provider(provider_name, model_name)
             if (provider_name or model_name)
@@ -220,6 +233,7 @@ class AgentOrchestrator:
         max_attempts: int = 3,
         provider_name: Optional[str] = None,
         model_name: Optional[str] = None,
+        swarm_mode: bool = False,
     ) -> Dict[str, Any]:
         """
         Synchronous non-streaming execution wrapper. Consumes the SSE stream
@@ -231,6 +245,9 @@ class AgentOrchestrator:
         stderr = ""
         figures: List[Dict[str, Any]] = []
         reflexion_steps: List[Dict[str, Any]] = []
+        critic_review: Optional[Dict[str, Any]] = None
+        debate_steps: List[Dict[str, Any]] = []
+        swarm_phases: List[Dict[str, Any]] = []
         turn_metadata: Dict[str, Any] = {}
         error_info: Optional[Dict[str, Any]] = None
 
@@ -241,6 +258,7 @@ class AgentOrchestrator:
             max_attempts=max_attempts,
             provider_name=provider_name,
             model_name=model_name,
+            swarm_mode=swarm_mode,
         ):
             # Parse SSE lines
             lines = [line for line in chunk.strip().splitlines() if line]
@@ -262,6 +280,12 @@ class AgentOrchestrator:
                     figures.append(payload.get("spec", {}))
                 elif event_type == "reflexion_step":
                     reflexion_steps.append(payload)
+                elif event_type == "critic_review":
+                    critic_review = payload
+                elif event_type == "debate_step":
+                    debate_steps.append(payload)
+                elif event_type == "swarm_phase":
+                    swarm_phases.append(payload)
                 elif event_type == "turn_complete":
                     turn_metadata = payload
                 elif event_type == "error":
@@ -289,6 +313,9 @@ class AgentOrchestrator:
             "has_mutated_df": turn_metadata.get("has_mutated_df", False),
             "df_shape": turn_metadata.get("df_shape"),
             "active_version": turn_metadata.get("active_version", "df_v0"),
+            "critic_review": critic_review,
+            "debate_history": debate_steps,
+            "swarm_phases": swarm_phases,
         }
 
 
