@@ -54,6 +54,7 @@ from services.api.routers.auth import router as auth_router
 from services.api.routers.workspaces import router as workspaces_router
 from services.api.routers.diagnostics import router as diagnostics_router
 from services.api.routers.reports import router as reports_router
+from services.api.routers.connectors_router import router as connectors_router
 from services.api.session_service import DATA_DIR, SANDBOX_URL, session_service
 from services.api.sql_engine import duckdb_engine
 
@@ -81,11 +82,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount authentication, workspace, diagnostics, and reports routers
+# Mount authentication, workspace, diagnostics, reports, and connectors routers
 app.include_router(auth_router)
 app.include_router(workspaces_router)
 app.include_router(diagnostics_router)
 app.include_router(reports_router)
+app.include_router(connectors_router)
 
 
 

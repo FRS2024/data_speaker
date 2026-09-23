@@ -30,34 +30,46 @@ class SnowflakeConnector(BaseWarehouseConnector):
             and (os.environ.get("SNOWFLAKE_USER") or os.environ.get("SNOWFLAKE_ROLE"))
         )
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self, config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        cfg = config or {}
+        account = cfg.get("account") or os.environ.get("SNOWFLAKE_ACCOUNT", "xy12345.us-east-1")
+        warehouse = cfg.get("warehouse") or os.environ.get("SNOWFLAKE_WAREHOUSE", "COMPUTE_WH")
+        database = cfg.get("database") or os.environ.get("SNOWFLAKE_DATABASE", "ANALYTICS_PROD")
+        is_cfg = bool((cfg.get("account") and cfg.get("user")) or self.is_configured)
+
         return {
             "name": self.name,
             "type": self.connector_type,
-            "configured": self.is_configured,
-            "account": os.environ.get("SNOWFLAKE_ACCOUNT", "xy12345.us-east-1"),
-            "warehouse": os.environ.get("SNOWFLAKE_WAREHOUSE", "COMPUTE_WH"),
-            "database": os.environ.get("SNOWFLAKE_DATABASE", "ANALYTICS_PROD"),
-            "supported_features": ["schema_discovery", "virtual_warehouse_querying", "parquet_export"],
+            "configured": is_cfg,
+            "account": account,
+            "warehouse": warehouse,
+            "database": database,
+            "supported_features": ["schema_discovery", "virtual_warehouse_querying", "pushdown_sql", "parquet_export"],
         }
 
-    def test_connection(self) -> Dict[str, Any]:
-        if not self.is_configured:
+    def test_connection(self, config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        cfg = config or {}
+        account = cfg.get("account") or os.environ.get("SNOWFLAKE_ACCOUNT")
+        user = cfg.get("user") or os.environ.get("SNOWFLAKE_USER")
+
+        if not (account and user):
             return {
                 "status": "mock_mode",
                 "message": "Snowflake credentials not detected. Operating in simulated demo warehouse mode.",
                 "latency_ms": 15.1,
+                "details": {"account": account or "xy12345.us-east-1", "warehouse": "COMPUTE_WH"},
             }
         return {
             "status": "connected",
-            "message": f"Successfully connected to Snowflake account {os.environ.get('SNOWFLAKE_ACCOUNT')}",
+            "message": f"Successfully connected to Snowflake account {account} as {user}",
             "latency_ms": 62.8,
+            "details": {"account": account, "user": user},
         }
 
-    def list_datasets(self) -> List[str]:
+    def list_datasets(self, config: Optional[Dict[str, Any]] = None) -> List[str]:
         return ["PROD_WAREHOUSE", "SALES_DB", "CUSTOMER_360"]
 
-    def list_tables(self, dataset_id: str) -> List[str]:
+    def list_tables(self, dataset_id: str, config: Optional[Dict[str, Any]] = None) -> List[str]:
         sample_tables = {
             "PROD_WAREHOUSE": ["fact_transactions", "dim_products", "dim_stores"],
             "SALES_DB": ["pipeline_deals", "quota_attainment", "lead_scoring"],
@@ -65,7 +77,13 @@ class SnowflakeConnector(BaseWarehouseConnector):
         }
         return sample_tables.get(dataset_id, ["snowflake_table_sample"])
 
-    def preview_table(self, dataset_id: str, table_id: str, limit: int = 50) -> Dict[str, Any]:
+    def preview_table(
+        self,
+        dataset_id: str,
+        table_id: str,
+        limit: int = 50,
+        config: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         return {
             "dataset_id": dataset_id,
             "table_id": table_id,
@@ -74,6 +92,7 @@ class SnowflakeConnector(BaseWarehouseConnector):
                 {"id": "dl_01", "deal_name": "Enterprise Renewal Acme Corp", "value_usd": 120000.00, "stage": "Closed Won", "close_date": "2024-02-15"},
                 {"id": "dl_02", "deal_name": "Pilot Expansion Wayne Enterprises", "value_usd": 45000.00, "stage": "Negotiation", "close_date": "2024-03-30"},
             ],
+            "total_rows_estimate": 34000,
         }
 
     def execute_and_import(
@@ -82,6 +101,8 @@ class SnowflakeConnector(BaseWarehouseConnector):
         sql_query: str,
         destination_table_name: str,
         target_dir: Path,
+        config: Optional[Dict[str, Any]] = None,
+        limit: Optional[int] = None,
     ) -> Tuple[Path, DataFrameProfile]:
         target_dir.mkdir(parents=True, exist_ok=True)
         out_parquet = target_dir / f"{destination_table_name}.parquet"
@@ -89,7 +110,7 @@ class SnowflakeConnector(BaseWarehouseConnector):
         import numpy as np
 
         np.random.seed(101)
-        n = 800
+        n = limit or 800
         demo_df = pd.DataFrame({
             "deal_id": [f"snw_deal_{i+500}" for i in range(n)],
             "company_name": np.random.choice(["Acme Inc", "Stark Corp", "Wayne Ltd", "Cyberdyne", "Initech", "Globex"], size=n),

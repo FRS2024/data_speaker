@@ -732,4 +732,108 @@ class SpeechSynthesizeRequest(BaseModel):
     speed: Optional[float] = 1.0
 
 
+# ============================================================================
+# Track F: Enterprise Warehouse & Lakehouse Connectors Studio Models
+# ============================================================================
+
+class WarehouseConnectionConfig(SQLModel, table=True):
+    """Secure workspace-scoped warehouse connection configuration."""
+    __tablename__ = "warehouse_connections"
+
+    id: str = Field(
+        default_factory=lambda: f"whc_{uuid.uuid4().hex[:12]}",
+        primary_key=True,
+        index=True,
+    )
+    workspace_id: str = Field(index=True, foreign_key="workspaces.id")
+    connector_type: str = Field(index=True, description="postgres | bigquery | snowflake | databricks")
+    name: str = Field(description="Display label e.g. Production RDS or Snowflake Analytics")
+    config_json: str = Field(description="JSON serialized credentials and connection attributes")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    def get_config(self) -> Dict[str, Any]:
+        """Deserialize config_json to dictionary."""
+        try:
+            return json.loads(self.config_json)
+        except Exception:
+            return {}
+
+    def get_masked_config(self) -> Dict[str, Any]:
+        """Return config with sensitive keys (passwords, tokens, keys) masked."""
+        cfg = self.get_config()
+        masked = {}
+        for k, v in cfg.items():
+            if any(secret in k.lower() for secret in ["password", "token", "secret", "private_key", "credential"]):
+                masked[k] = "••••••••" if v else ""
+            else:
+                masked[k] = v
+        return masked
+
+
+class WarehouseTestRequest(BaseModel):
+    connector_type: str
+    config: Dict[str, Any] = {}
+
+
+class WarehouseTestResponse(BaseModel):
+    status: str  # "connected" | "mock_mode" | "error"
+    message: str
+    latency_ms: float
+    details: Optional[Dict[str, Any]] = None
+
+
+class WarehouseConfigRequest(BaseModel):
+    connector_type: str
+    name: str
+    config: Dict[str, Any]
+
+
+class WarehouseConfigResponse(BaseModel):
+    id: str
+    connector_type: str
+    name: str
+    masked_config: Dict[str, Any]
+    created_at: datetime
+    updated_at: datetime
+
+
+class WarehouseConnectorSummary(BaseModel):
+    connector_type: str
+    name: str
+    configured: bool
+    mode: str  # "connected" | "demo_sandbox" | "unconfigured"
+    description: str
+    supported_features: List[str] = []
+    saved_configs: List[WarehouseConfigResponse] = []
+
+
+class WarehouseSchemaTreeResponse(BaseModel):
+    connector_type: str
+    schemas: List[str]
+
+
+class WarehouseTableListResponse(BaseModel):
+    connector_type: str
+    schema_name: str
+    tables: List[str]
+
+
+class WarehouseTablePreviewResponse(BaseModel):
+    connector_type: str
+    schema_name: str
+    table_name: str
+    columns: List[ColumnProfile]
+    rows: List[Dict[str, Any]]
+    total_rows_estimate: int
+
+
+class WarehouseSyncRequest(BaseModel):
+    schema_name: Optional[str] = None
+    table_name: Optional[str] = None
+    sql_query: Optional[str] = None
+    limit: int = 5000
+
+
+
 

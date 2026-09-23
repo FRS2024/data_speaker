@@ -14,6 +14,7 @@ interface ZeroStateCanvasProps {
   providersStatus?: any;
   isSwarmMode?: boolean;
   onToggleSwarmMode?: () => void;
+  onOpenWarehouse?: () => void;
 }
 
 export const ZeroStateCanvas: React.FC<ZeroStateCanvasProps> = ({
@@ -29,6 +30,7 @@ export const ZeroStateCanvas: React.FC<ZeroStateCanvasProps> = ({
   providersStatus,
   isSwarmMode = false,
   onToggleSwarmMode,
+  onOpenWarehouse,
 }) => {
   const suggestedQueries = [
     {
@@ -93,6 +95,16 @@ export const ZeroStateCanvas: React.FC<ZeroStateCanvasProps> = ({
               <span>Schema Catalog ({tableCount} tables)</span>
             </button>
           )}
+          {onOpenWarehouse && (
+            <button
+              onClick={onOpenWarehouse}
+              className="hidden sm:flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/20 transition-all text-body-sm font-body-sm shadow-sm"
+              type="button"
+            >
+              <span className="material-symbols-outlined text-[15px] text-amber-400">cloud_sync</span>
+              <span>Warehouse Studio</span>
+            </button>
+          )}
         </div>
 
         <div className="flex items-center gap-space-sm font-label-caps text-label-caps">
@@ -143,6 +155,7 @@ export const ZeroStateCanvas: React.FC<ZeroStateCanvasProps> = ({
           providersStatus={providersStatus}
           isSwarmMode={isSwarmMode}
           onToggleSwarmMode={onToggleSwarmMode}
+          onOpenWarehouse={onOpenWarehouse}
         />
 
         {/* Curated Prompt Starters */}

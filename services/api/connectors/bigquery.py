@@ -31,49 +31,58 @@ class BigQueryConnector(BaseWarehouseConnector):
             or os.environ.get("BIGQUERY_PROJECT")
         )
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self, config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        cfg = config or {}
         project = (
-            os.environ.get("GCP_PROJECT_ID")
+            cfg.get("project_id")
+            or os.environ.get("GCP_PROJECT_ID")
             or os.environ.get("BIGQUERY_PROJECT")
             or "demo-gcp-analytics"
         )
+        is_cfg = bool(cfg.get("project_id") or self.is_configured)
         return {
             "name": self.name,
             "type": self.connector_type,
-            "configured": self.is_configured,
+            "configured": is_cfg,
             "project_id": project,
-            "credentials_type": "Service Account" if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS") else "Application Default / Demo Stub",
-            "supported_features": ["schema_discovery", "partition_scanning", "parquet_export"],
+            "credentials_type": "Service Account" if (cfg.get("credentials_json") or os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")) else "Application Default / Demo Stub",
+            "supported_features": ["schema_discovery", "partition_scanning", "pushdown_sql", "parquet_export"],
         }
 
-    def test_connection(self) -> Dict[str, Any]:
-        if not self.is_configured:
+    def test_connection(self, config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        cfg = config or {}
+        project = cfg.get("project_id") or os.environ.get("GCP_PROJECT_ID") or os.environ.get("BIGQUERY_PROJECT")
+        if not (cfg.get("credentials_json") or self.is_configured):
             return {
                 "status": "mock_mode",
                 "message": "BigQuery credentials not detected. Operating in simulated demo warehouse mode.",
                 "latency_ms": 12.4,
+                "details": {"dataset_count": 3, "default_project": project or "demo-gcp-analytics"},
             }
         return {
             "status": "connected",
-            "message": f"Successfully authenticated to Google BigQuery project: {os.environ.get('GCP_PROJECT_ID')}",
+            "message": f"Successfully authenticated to Google BigQuery project: {project}",
             "latency_ms": 48.2,
+            "details": {"project_id": project},
         }
 
-    def list_datasets(self) -> List[str]:
-        if self.is_configured:
+    def list_datasets(self, config: Optional[Dict[str, Any]] = None) -> List[str]:
+        cfg = config or {}
+        if self.is_configured or cfg.get("credentials_json"):
             try:
                 from google.cloud import bigquery
-                client = bigquery.Client()
+                client = bigquery.Client(project=cfg.get("project_id"))
                 return [d.dataset_id for d in client.list_datasets()]
             except Exception as e:
                 print(f"[WARN] BigQuery list_datasets failed: {e}")
         return ["ecommerce_analytics", "financial_metrics", "marketing_attribution"]
 
-    def list_tables(self, dataset_id: str) -> List[str]:
-        if self.is_configured:
+    def list_tables(self, dataset_id: str, config: Optional[Dict[str, Any]] = None) -> List[str]:
+        cfg = config or {}
+        if self.is_configured or cfg.get("credentials_json"):
             try:
                 from google.cloud import bigquery
-                client = bigquery.Client()
+                client = bigquery.Client(project=cfg.get("project_id"))
                 return [t.table_id for t in client.list_tables(dataset_id)]
             except Exception as e:
                 print(f"[WARN] BigQuery list_tables failed: {e}")
@@ -86,7 +95,13 @@ class BigQueryConnector(BaseWarehouseConnector):
         }
         return sample_tables.get(dataset_id, ["sample_warehouse_table"])
 
-    def preview_table(self, dataset_id: str, table_id: str, limit: int = 50) -> Dict[str, Any]:
+    def preview_table(
+        self,
+        dataset_id: str,
+        table_id: str,
+        limit: int = 50,
+        config: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         return {
             "dataset_id": dataset_id,
             "table_id": table_id,
@@ -96,6 +111,7 @@ class BigQueryConnector(BaseWarehouseConnector):
                 {"id": "ord_1002", "created_at": "2024-03-01T11:22:30", "amount_usd": 89.00, "status": "COMPLETED", "customer_id": "usr_8821"},
                 {"id": "ord_1003", "created_at": "2024-03-01T12:05:15", "amount_usd": 450.00, "status": "REFUNDED", "customer_id": "usr_7733"},
             ],
+            "total_rows_estimate": 120500,
         }
 
     def execute_and_import(
@@ -104,14 +120,17 @@ class BigQueryConnector(BaseWarehouseConnector):
         sql_query: str,
         destination_table_name: str,
         target_dir: Path,
+        config: Optional[Dict[str, Any]] = None,
+        limit: Optional[int] = None,
     ) -> Tuple[Path, DataFrameProfile]:
         target_dir.mkdir(parents=True, exist_ok=True)
         out_parquet = target_dir / f"{destination_table_name}.parquet"
+        cfg = config or {}
 
-        if self.is_configured:
+        if self.is_configured or cfg.get("credentials_json"):
             try:
                 from google.cloud import bigquery
-                client = bigquery.Client()
+                client = bigquery.Client(project=cfg.get("project_id"))
                 query_job = client.query(sql_query)
                 df_result = query_job.to_dataframe()
                 df_result.to_parquet(out_parquet, index=False)
@@ -121,11 +140,11 @@ class BigQueryConnector(BaseWarehouseConnector):
             except Exception as e:
                 print(f"[WARN] Real BigQuery execution failed, using high-fidelity fallback: {e}")
 
-        # High-fidelity sample dataset generation
+        # High-fidelity sample dataset generation matching requested limit
         import numpy as np
 
         np.random.seed(42)
-        n = 1000
+        n = limit or 1000
         dates = pd.date_range("2024-01-01", periods=n, freq="h")
         demo_df = pd.DataFrame({
             "order_id": [f"bq_ord_{i+1000}" for i in range(n)],

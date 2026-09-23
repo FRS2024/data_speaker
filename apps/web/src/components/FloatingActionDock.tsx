@@ -15,6 +15,7 @@ interface FloatingActionDockProps {
   providersStatus?: any;
   isSwarmMode?: boolean;
   onToggleSwarmMode?: () => void;
+  onOpenWarehouse?: () => void;
 }
 
 export const FloatingActionDock: React.FC<FloatingActionDockProps> = ({
@@ -30,6 +31,7 @@ export const FloatingActionDock: React.FC<FloatingActionDockProps> = ({
   providersStatus,
   isSwarmMode = false,
   onToggleSwarmMode,
+  onOpenWarehouse,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
@@ -364,6 +366,20 @@ export const FloatingActionDock: React.FC<FloatingActionDockProps> = ({
                   </span>
                   <span className="hidden sm:inline font-mono">
                     {isSwarmMode ? "Swarm: ON" : "Swarm: OFF"}
+                  </span>
+                </button>
+              )}
+
+              {/* Warehouse Quick Trigger */}
+              {onOpenWarehouse && (
+                <button
+                  type="button"
+                  onClick={onOpenWarehouse}
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:text-amber-400 hover:bg-surface-container-highest transition-all"
+                  title="Open Enterprise Warehouse Studio (PostgreSQL, BigQuery, Snowflake, Databricks)"
+                >
+                  <span className="material-symbols-outlined text-[19px]">
+                    cloud_sync
                   </span>
                 </button>
               )}

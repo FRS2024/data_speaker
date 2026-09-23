@@ -460,4 +460,84 @@ export interface SpeechSynthesizeRequest {
   speed?: number;
 }
 
+// ---------------------------------------------------------------------------
+// Track F: Enterprise Warehouse & Lakehouse Connectors Studio Types
+// ---------------------------------------------------------------------------
+
+export type WarehouseConnectorType = "postgres" | "bigquery" | "snowflake" | "databricks";
+
+export interface WarehouseConfigResponse {
+  id: string;
+  connector_type: WarehouseConnectorType;
+  name: string;
+  masked_config: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WarehouseConnectorSummary {
+  connector_type: WarehouseConnectorType;
+  name: string;
+  configured: boolean;
+  mode: "connected" | "demo_sandbox" | "unconfigured";
+  description: string;
+  supported_features: string[];
+  saved_configs: WarehouseConfigResponse[];
+}
+
+export interface WarehouseTestRequest {
+  connector_type: WarehouseConnectorType;
+  config: Record<string, any>;
+}
+
+export interface WarehouseTestResponse {
+  status: "connected" | "mock_mode" | "error";
+  message: string;
+  latency_ms: number;
+  details?: Record<string, any>;
+}
+
+export interface WarehouseConfigRequest {
+  connector_type: WarehouseConnectorType;
+  name: string;
+  config: Record<string, any>;
+}
+
+export interface WarehouseSchemaTreeResponse {
+  connector_type: WarehouseConnectorType;
+  schemas: string[];
+}
+
+export interface WarehouseTableListResponse {
+  connector_type: WarehouseConnectorType;
+  schema_name: string;
+  tables: string[];
+}
+
+export interface WarehouseTablePreviewResponse {
+  connector_type: WarehouseConnectorType;
+  schema_name: string;
+  table_name: string;
+  columns: ColumnProfile[];
+  rows: Record<string, any>[];
+  total_rows_estimate: number;
+}
+
+export interface WarehouseSyncRequest {
+  schema_name?: string;
+  table_name?: string;
+  sql_query?: string;
+  limit?: number;
+}
+
+export interface WarehouseSyncResponse {
+  status: string;
+  session_id: string;
+  connector_type: WarehouseConnectorType;
+  table_name: string;
+  rows_synced: number;
+  active_version: string;
+  profile?: DataFrameProfile;
+}
+
 

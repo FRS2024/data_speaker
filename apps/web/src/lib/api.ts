@@ -19,6 +19,17 @@ import {
   DeckConfigRequest,
   DeckPreviewResponse,
   AIPolishResponse,
+  WarehouseConnectorType,
+  WarehouseConnectorSummary,
+  WarehouseConfigResponse,
+  WarehouseConfigRequest,
+  WarehouseTestRequest,
+  WarehouseTestResponse,
+  WarehouseSchemaTreeResponse,
+  WarehouseTableListResponse,
+  WarehouseTablePreviewResponse,
+  WarehouseSyncRequest,
+  WarehouseSyncResponse,
 } from "./types";
 
 export interface SessionListItem {
@@ -658,6 +669,145 @@ export const reportsPreviewQueryOptions = (sessionId: string, theme: string = "d
   queryOptions({
     queryKey: ["reports", "preview", sessionId, theme],
     queryFn: () => reportsApi.getDeckPreview(sessionId, theme),
+    staleTime: 30000,
+  });
+
+// ---------------------------------------------------------------------------
+// Warehouse & Lakehouse Connectors Studio API (Track F)
+// ---------------------------------------------------------------------------
+
+export const warehouseApi = {
+  async getConnectors(): Promise<WarehouseConnectorSummary[]> {
+    const res = await authFetch("/api/v1/connectors");
+    if (!res.ok) {
+      throw new Error(`Failed to load warehouse connectors: ${res.statusText}`);
+    }
+    return res.json();
+  },
+
+  async testConnection(req: WarehouseTestRequest): Promise<WarehouseTestResponse> {
+    const res = await authFetch("/api/v1/connectors/test", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "Connection test failed");
+    }
+    return res.json();
+  },
+
+  async saveConfig(req: WarehouseConfigRequest): Promise<WarehouseConfigResponse> {
+    const res = await authFetch("/api/v1/connectors/config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "Failed to save warehouse credentials");
+    }
+    return res.json();
+  },
+
+  async getConfigs(connectorType: WarehouseConnectorType): Promise<WarehouseConfigResponse[]> {
+    const res = await authFetch(`/api/v1/connectors/config/${connectorType}`);
+    if (!res.ok) {
+      return [];
+    }
+    return res.json();
+  },
+
+  async deleteConfig(configId: string): Promise<void> {
+    const res = await authFetch(`/api/v1/connectors/config/${configId}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) {
+      throw new Error("Failed to delete warehouse config");
+    }
+  },
+
+  async getSchemas(connectorType: WarehouseConnectorType): Promise<WarehouseSchemaTreeResponse> {
+    const res = await authFetch(`/api/v1/connectors/${connectorType}/schemas`);
+    if (!res.ok) {
+      throw new Error(`Failed to load schemas for ${connectorType}`);
+    }
+    return res.json();
+  },
+
+  async getTables(connectorType: WarehouseConnectorType, schemaName: string): Promise<WarehouseTableListResponse> {
+    const res = await authFetch(`/api/v1/connectors/${connectorType}/schemas/${schemaName}/tables`);
+    if (!res.ok) {
+      throw new Error(`Failed to load tables for ${schemaName}`);
+    }
+    return res.json();
+  },
+
+  async previewTable(
+    connectorType: WarehouseConnectorType,
+    schemaName: string,
+    tableName: string,
+    limit: number = 50
+  ): Promise<WarehouseTablePreviewResponse> {
+    const res = await authFetch(
+      `/api/v1/connectors/${connectorType}/schemas/${schemaName}/tables/${tableName}/preview?limit=${limit}`
+    );
+    if (!res.ok) {
+      throw new Error(`Failed to preview table ${tableName}`);
+    }
+    return res.json();
+  },
+
+  async syncData(
+    connectorType: WarehouseConnectorType,
+    sessionId: string,
+    req: WarehouseSyncRequest
+  ): Promise<WarehouseSyncResponse> {
+    const res = await authFetch(`/api/v1/connectors/${connectorType}/sync/${sessionId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `Failed to sync warehouse data into session`);
+    }
+    return res.json();
+  },
+};
+
+export const warehouseConnectorsQueryOptions = () =>
+  queryOptions({
+    queryKey: ["warehouse", "connectors"],
+    queryFn: () => warehouseApi.getConnectors(),
+    staleTime: 10000,
+  });
+
+export const warehouseSchemasQueryOptions = (connectorType: WarehouseConnectorType) =>
+  queryOptions({
+    queryKey: ["warehouse", "schemas", connectorType],
+    queryFn: () => warehouseApi.getSchemas(connectorType),
+    staleTime: 30000,
+  });
+
+export const warehouseTablesQueryOptions = (connectorType: WarehouseConnectorType, schemaName: string) =>
+  queryOptions({
+    queryKey: ["warehouse", "tables", connectorType, schemaName],
+    queryFn: () => warehouseApi.getTables(connectorType, schemaName),
+    enabled: Boolean(schemaName),
+    staleTime: 30000,
+  });
+
+export const warehousePreviewQueryOptions = (
+  connectorType: WarehouseConnectorType,
+  schemaName: string,
+  tableName: string
+) =>
+  queryOptions({
+    queryKey: ["warehouse", "preview", connectorType, schemaName, tableName],
+    queryFn: () => warehouseApi.previewTable(connectorType, schemaName, tableName),
+    enabled: Boolean(schemaName && tableName),
     staleTime: 30000,
   });
 

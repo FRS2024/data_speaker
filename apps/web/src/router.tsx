@@ -23,6 +23,7 @@ import { SqlPatchModal } from "./components/SqlPatchModal";
 import { SchemaMapper } from "./components/SchemaMapper";
 import { DiagnosticsStudio } from "./components/DiagnosticsStudio";
 import { ReportsStudio } from "./components/ReportsStudio";
+import { WarehouseStudio } from "./components/WarehouseStudio";
 
 import { useChatStream } from "./hooks/useChatStream";
 import {
@@ -40,7 +41,7 @@ import { queryClient } from "./lib/queryClient";
 // Zod Search Parameters Schema for Type-Safe Navigation
 const searchSchema = z.object({
   session_id: z.string().optional(),
-  tab: z.enum(["canvas", "sql", "table", "charts", "history", "mapper", "diagnostics", "reports"]).optional().default("canvas"),
+  tab: z.enum(["canvas", "sql", "table", "charts", "history", "mapper", "diagnostics", "reports", "warehouse"]).optional().default("canvas"),
 });
 
 type SearchParams = z.infer<typeof searchSchema>;
@@ -230,6 +231,7 @@ const RootLayout: React.FC = () => {
                   setPromptInput(prompt);
                 }}
                 onOpenSchemaCatalog={() => handleTabChange("table")}
+                onOpenWarehouse={() => handleTabChange("warehouse")}
                 tableCount={schemaData?.table_count || 1}
                 selectedProvider={selectedProvider}
                 onSelectProvider={setSelectedProvider}
@@ -366,6 +368,13 @@ const RootLayout: React.FC = () => {
 
           {activeTab === "reports" && activeSessionId && (
             <ReportsStudio sessionId={activeSessionId} />
+          )}
+
+          {activeTab === "warehouse" && activeSessionId && (
+            <WarehouseStudio
+              sessionId={activeSessionId}
+              onNavigateToTab={(t) => handleTabChange(t)}
+            />
           )}
         </main>
       </div>

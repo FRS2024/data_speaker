@@ -26,27 +26,33 @@ class BaseWarehouseConnector(ABC):
         pass
 
     @abstractmethod
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self, config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Return connector health and configuration metadata."""
         pass
 
     @abstractmethod
-    def test_connection(self) -> Dict[str, Any]:
+    def test_connection(self, config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Verify network connectivity and credentials with the cloud warehouse."""
         pass
 
     @abstractmethod
-    def list_datasets(self) -> List[str]:
+    def list_datasets(self, config: Optional[Dict[str, Any]] = None) -> List[str]:
         """List accessible datasets or databases."""
         pass
 
     @abstractmethod
-    def list_tables(self, dataset_id: str) -> List[str]:
+    def list_tables(self, dataset_id: str, config: Optional[Dict[str, Any]] = None) -> List[str]:
         """List tables within a specified dataset."""
         pass
 
     @abstractmethod
-    def preview_table(self, dataset_id: str, table_id: str, limit: int = 50) -> Dict[str, Any]:
+    def preview_table(
+        self,
+        dataset_id: str,
+        table_id: str,
+        limit: int = 50,
+        config: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """Preview top rows from an external table."""
         pass
 
@@ -57,6 +63,8 @@ class BaseWarehouseConnector(ABC):
         sql_query: str,
         destination_table_name: str,
         target_dir: Path,
+        config: Optional[Dict[str, Any]] = None,
+        limit: Optional[int] = None,
     ) -> Tuple[Path, DataFrameProfile]:
         """
         Execute an analytical SQL query against the warehouse, download the result

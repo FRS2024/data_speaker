@@ -286,6 +286,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
 
             <button
+              onClick={() => onTabChange("warehouse")}
+              className={`flex items-center gap-space-sm px-2.5 py-1.5 rounded-lg text-body-sm transition-colors text-left ${
+                currentTab === "warehouse"
+                  ? "bg-surface-container-high text-primary font-medium shadow-sm"
+                  : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+              }`}
+              title="Enterprise Warehouse & Lakehouse Studio"
+            >
+              <span className="material-symbols-outlined text-[18px] text-amber-400 shrink-0">
+                cloud_sync
+              </span>
+              {!isCollapsed && <span className="truncate">Warehouse Studio</span>}
+            </button>
+
+            <button
               onClick={() => onTabChange("history")}
               className={`flex items-center gap-space-sm px-2.5 py-1.5 rounded-lg text-body-sm transition-colors text-left ${
                 currentTab === "history"
