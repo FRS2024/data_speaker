@@ -430,4 +430,34 @@ export interface SwarmPhaseEvent {
   confidence_score?: number;
 }
 
+// ---------------------------------------------------------------------------
+// Track E: Live Conversational Voice & Audio Interaction Types
+// ---------------------------------------------------------------------------
+
+export interface AudioTranscribeResponse {
+  text: string;
+  duration_seconds: number;
+  confidence: number;
+  language: string;
+}
+
+export interface ExecutiveRecapRequest {
+  session_id: string;
+  turn_id?: string;
+  content: string;
+  metrics?: Record<string, any>;
+}
+
+export interface ExecutiveRecapResponse {
+  recap_text: string;
+  estimated_listen_seconds: number;
+  bullet_highlights: string[];
+}
+
+export interface SpeechSynthesizeRequest {
+  text: string;
+  voice?: string;
+  speed?: number;
+}
+
 

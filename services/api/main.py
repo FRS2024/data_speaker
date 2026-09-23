@@ -43,7 +43,12 @@ from services.api.models import (
     SqlCheckpointRequest,
     SqlQueryRequest,
     SqlQueryResponse,
+    AudioTranscribeResponse,
+    ExecutiveRecapRequest,
+    ExecutiveRecapResponse,
+    SpeechSynthesizeRequest,
 )
+from services.api.audio_service import audio_service
 from services.api.profiler import clean_table_name
 from services.api.routers.auth import router as auth_router
 from services.api.routers.workspaces import router as workspaces_router
@@ -664,4 +669,61 @@ async def import_warehouse_dataset(
         profiles=profiles,
         status="ready",
     )
+
+
+# ---------------------------------------------------------------------------
+# Track E: Live Conversational Voice & Audio Interaction Endpoints
+# ---------------------------------------------------------------------------
+
+@app.post("/api/v1/audio/transcribe", response_model=AudioTranscribeResponse, tags=["Audio"])
+async def transcribe_audio_endpoint(
+    file: UploadFile = File(...),
+    ctx: AuthContext = Depends(get_auth_context),
+) -> AudioTranscribeResponse:
+    """
+    Transcribe audio recording from microphone into prompt text.
+    Acts as zero-latency server fallback when browser Web Speech API is unavailable.
+    """
+    file_bytes = await file.read()
+    return audio_service.transcribe_audio(file_bytes=file_bytes, filename=file.filename or "recording.webm")
+
+
+@app.post("/api/v1/audio/recap", response_model=ExecutiveRecapResponse, tags=["Audio"])
+async def generate_executive_recap_endpoint(
+    request: ExecutiveRecapRequest,
+    ctx: AuthContext = Depends(get_auth_context),
+) -> ExecutiveRecapResponse:
+    """
+    Formulate a natural, spoken 20-second executive audio recap from turn insights.
+    Filters out raw code, SQL, and data tables to optimize for conversational listening.
+    """
+    return await audio_service.generate_executive_recap(
+        content=request.content,
+        metrics=request.metrics,
+    )
+
+
+@app.post("/api/v1/audio/synthesize", tags=["Audio"])
+def synthesize_speech_endpoint(
+    request: SpeechSynthesizeRequest,
+    ctx: AuthContext = Depends(get_auth_context),
+) -> Response:
+    """
+    Synthesize natural speech audio bytes from text as fallback for client-side TTS.
+    Returns audio/wav streaming payload.
+    """
+    audio_bytes = audio_service.synthesize_speech(
+        text=request.text,
+        voice=request.voice or "neutral",
+        speed=request.speed or 1.0,
+    )
+    return Response(
+        content=audio_bytes,
+        media_type="audio/wav",
+        headers={
+            "Content-Disposition": 'inline; filename="narration.wav"',
+            "Cache-Control": "no-cache",
+        },
+    )
+
 

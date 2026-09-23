@@ -702,4 +702,34 @@ class SwarmPhaseEvent(BaseModel):
     step: int
 
 
+# ============================================================================
+# Track E: Live Conversational Voice & Audio Interaction Models
+# ============================================================================
+
+class AudioTranscribeResponse(BaseModel):
+    text: str
+    duration_seconds: float
+    confidence: float = 1.0
+    language: str = "en"
+
+
+class ExecutiveRecapRequest(BaseModel):
+    session_id: str
+    turn_id: Optional[str] = None
+    content: str
+    metrics: Optional[Dict[str, Any]] = None
+
+
+class ExecutiveRecapResponse(BaseModel):
+    recap_text: str
+    estimated_listen_seconds: int
+    bullet_highlights: List[str] = []
+
+
+class SpeechSynthesizeRequest(BaseModel):
+    text: str
+    voice: Optional[str] = "neutral"
+    speed: Optional[float] = 1.0
+
+
 

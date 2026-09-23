@@ -3,6 +3,7 @@ import { ChatMessage, SwarmPhaseEvent } from "@/lib/types";
 import { FloatingActionDock } from "./FloatingActionDock";
 import { SwarmWorkflowStepper } from "./SwarmWorkflowStepper";
 import { StatisticalPeerReviewCard } from "./StatisticalPeerReviewCard";
+import { TurnAudioPlayer } from "./TurnAudioPlayer";
 import Plot from "react-plotly.js";
 
 interface ActiveChatViewProps {
@@ -11,6 +12,7 @@ interface ActiveChatViewProps {
   onPromptChange: (val: string) => void;
   onSubmitPrompt: () => void;
   isStreaming: boolean;
+  sessionId?: string;
   onOpenPatchModal?: () => void;
   onNavigateTab?: (tab: string) => void;
   selectedProvider?: string;
@@ -27,6 +29,7 @@ export const ActiveChatView: React.FC<ActiveChatViewProps> = ({
   onPromptChange,
   onSubmitPrompt,
   isStreaming,
+  sessionId = "default",
   onOpenPatchModal,
   onNavigateTab,
   selectedProvider,
@@ -217,6 +220,15 @@ export const ActiveChatView: React.FC<ActiveChatViewProps> = ({
                   <div className="p-space-md rounded-2xl rounded-tl-none bg-surface-container text-on-surface font-body-md text-body-md shadow-md leading-relaxed whitespace-pre-wrap flex flex-col gap-2">
                     {msg.content}
                   </div>
+                )}
+
+                {/* Voice Audio Narration Player */}
+                {msg.status === "complete" && msg.content && (
+                  <TurnAudioPlayer
+                    sessionId={sessionId}
+                    turnId={msg.id}
+                    content={msg.content}
+                  />
                 )}
 
                 {/* Quick Action Pills on Response */}

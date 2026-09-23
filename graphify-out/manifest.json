@@ -138,15 +138,15 @@
     "semantic_hash": ""
   },
   "services/api/main.py": {
-    "mtime": 1790196053.6027362,
-    "seen": 1790197822.5680773,
-    "ast_hash": "96c7ce91ff9744f08d4532107bdaf56b",
+    "mtime": 1790200911.8505135,
+    "seen": 1790201664.8571305,
+    "ast_hash": "81cbb498475cc203137acf289e4da7f2",
     "semantic_hash": ""
   },
   "services/api/models.py": {
-    "mtime": 1790195749.198212,
-    "seen": 1790197822.5680773,
-    "ast_hash": "0201dae4e0d078cfcb513f604a975c85",
+    "mtime": 1790200871.8748143,
+    "seen": 1790201664.8571305,
+    "ast_hash": "7a39173d2526a72acb89837b74fa9759",
     "semantic_hash": ""
   },
   "services/api/profiler.py": {
@@ -372,15 +372,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/ActiveChatView.tsx": {
-    "mtime": 1790196467.39364,
-    "seen": 1790197822.5680773,
-    "ast_hash": "a26e23ed49309bddd014474a48f94815",
+    "mtime": 1790200999.7326398,
+    "seen": 1790201664.856104,
+    "ast_hash": "561e7c174476198c50d7cb8cc7966204",
     "semantic_hash": ""
   },
   "apps/web/src/components/FloatingActionDock.tsx": {
-    "mtime": 1790196436.782724,
-    "seen": 1790197822.5680773,
-    "ast_hash": "fa6c57009cbb67543d76dc49fa6c7f47",
+    "mtime": 1790200983.28332,
+    "seen": 1790201664.8571305,
+    "ast_hash": "759e144bd729d0589ed7b44d86d7f4a8",
     "semantic_hash": ""
   },
   "apps/web/src/components/Header.tsx": {
@@ -438,9 +438,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/router.tsx": {
-    "mtime": 1790196726.0078826,
-    "seen": 1790197822.5680773,
-    "ast_hash": "313edd60a4ad3f51c40bea26c421aad5",
+    "mtime": 1790201010.7124655,
+    "seen": 1790201664.8571305,
+    "ast_hash": "4b5c44c8fbaa36ad1e5c094b6d0445ac",
     "semantic_hash": ""
   },
   "apps/web/vite.config.ts": {
@@ -624,9 +624,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/lib/types.ts": {
-    "mtime": 1790196084.764566,
-    "seen": 1790197822.5680773,
-    "ast_hash": "a42908a7b23071a857678e0796c999a0",
+    "mtime": 1790200922.0095873,
+    "seen": 1790201664.8571305,
+    "ast_hash": "73e856bfa1aa7b80f4e23225a0ced222",
     "semantic_hash": ""
   },
   "services/api/automl.py": {
@@ -729,6 +729,42 @@
     "mtime": 1790196823.08963,
     "seen": 1790197822.5680773,
     "ast_hash": "ab60197fe39287b57876444c953221d9",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/AudioWaveVisualizer.tsx": {
+    "mtime": 1790200951.5011287,
+    "seen": 1790201664.856104,
+    "ast_hash": "e76c01066365f72848597b64abf6d034",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/TurnAudioPlayer.tsx": {
+    "mtime": 1790200963.1579003,
+    "seen": 1790201664.8571305,
+    "ast_hash": "d3fc039ca2826fc7e52bf10a857763e4",
+    "semantic_hash": ""
+  },
+  "apps/web/src/hooks/useVoiceInput.ts": {
+    "mtime": 1790200933.5017304,
+    "seen": 1790201664.8571305,
+    "ast_hash": "bc565036355823ef7833403496d9c928",
+    "semantic_hash": ""
+  },
+  "apps/web/src/hooks/useVoiceOutput.ts": {
+    "mtime": 1790200943.8308897,
+    "seen": 1790201664.8571305,
+    "ast_hash": "258e93fa50515f9a5dff20a0c5a98f50",
+    "semantic_hash": ""
+  },
+  "services/api/audio_service.py": {
+    "mtime": 1790200884.2703211,
+    "seen": 1790201664.8571305,
+    "ast_hash": "6050605b55f9fa677db814937ddccf8b",
+    "semantic_hash": ""
+  },
+  "tests/test_audio_service.py": {
+    "mtime": 1790201039.9147587,
+    "seen": 1790201664.8571305,
+    "ast_hash": "5059bec9351631eb217e38a6f5092cd4",
     "semantic_hash": ""
   }
 }

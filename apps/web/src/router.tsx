@@ -244,6 +244,7 @@ const RootLayout: React.FC = () => {
                 onPromptChange={setPromptInput}
                 onSubmitPrompt={handleSendPrompt}
                 isStreaming={isStreaming}
+                sessionId={activeSessionId}
                 onOpenPatchModal={() => setIsPatchModalOpen(true)}
                 onNavigateTab={handleTabChange}
                 selectedProvider={selectedProvider}

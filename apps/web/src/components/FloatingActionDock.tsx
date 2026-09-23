@@ -1,4 +1,6 @@
 import React, { useRef, useEffect } from "react";
+import { useVoiceInput } from "@/hooks/useVoiceInput";
+import { AudioWaveVisualizer } from "./AudioWaveVisualizer";
 
 interface FloatingActionDockProps {
   value: string;
@@ -32,6 +34,23 @@ export const FloatingActionDock: React.FC<FloatingActionDockProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const {
+    isListening,
+    interimTranscript,
+    elapsedSeconds,
+    error: voiceError,
+    startListening,
+    stopListening,
+    cancelListening,
+  } = useVoiceInput({
+    onTranscriptUpdate: (newTranscript) => {
+      onChange(newTranscript);
+    },
+    onFinalTranscript: (finalTranscript) => {
+      onChange(finalTranscript);
+    },
+  });
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -137,6 +156,44 @@ export const FloatingActionDock: React.FC<FloatingActionDockProps> = ({
               </button>
             )}
           </div>
+
+          {/* Voice Dictation Live Banner */}
+          {isListening && (
+            <div className="flex items-center justify-between bg-rose-950/40 border border-rose-500/40 rounded-xl px-3 py-1.5 text-xs text-rose-200 animate-in fade-in duration-200">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                </span>
+                <span className="font-semibold text-rose-300">Listening...</span>
+                <span className="font-mono text-zinc-400">
+                  00:{elapsedSeconds < 10 ? `0${elapsedSeconds}` : elapsedSeconds}
+                </span>
+                {interimTranscript && (
+                  <span className="text-zinc-400 italic truncate max-w-xs">
+                    "{interimTranscript}"
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <AudioWaveVisualizer isActive={true} height={16} barCount={8} colorClass="bg-rose-400" />
+                <button
+                  type="button"
+                  onClick={cancelListening}
+                  className="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[11px] transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={stopListening}
+                  className="px-2 py-0.5 rounded bg-rose-600 hover:bg-rose-500 text-white font-medium text-[11px] transition-colors shadow"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Bottom Action Bar / Accessories inside Capsule */}
           <div className="flex flex-wrap items-center justify-between gap-space-sm pt-space-xs px-space-xs border-t border-outline-variant/15">
@@ -314,10 +371,17 @@ export const FloatingActionDock: React.FC<FloatingActionDockProps> = ({
               {/* Audio Dictation Trigger */}
               <button
                 type="button"
-                className="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all"
-                title="Audio Reasoning"
+                onClick={isListening ? stopListening : startListening}
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
+                  isListening
+                    ? "bg-rose-500/20 text-rose-400 border border-rose-500/50 animate-pulse shadow-[0_0_12px_rgba(244,63,94,0.3)]"
+                    : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest"
+                }`}
+                title={isListening ? "Stop Voice Dictation" : "Voice Query Dictation"}
               >
-                <span className="material-symbols-outlined text-[19px]">mic</span>
+                <span className="material-symbols-outlined text-[19px]">
+                  {isListening ? "mic_off" : "mic"}
+                </span>
               </button>
 
               {/* Main Submission Pill */}
