@@ -48,6 +48,7 @@ from services.api.profiler import clean_table_name
 from services.api.routers.auth import router as auth_router
 from services.api.routers.workspaces import router as workspaces_router
 from services.api.routers.diagnostics import router as diagnostics_router
+from services.api.routers.reports import router as reports_router
 from services.api.session_service import DATA_DIR, SANDBOX_URL, session_service
 from services.api.sql_engine import duckdb_engine
 
@@ -75,10 +76,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount authentication, workspace, and diagnostics routers
+# Mount authentication, workspace, diagnostics, and reports routers
 app.include_router(auth_router)
 app.include_router(workspaces_router)
 app.include_router(diagnostics_router)
+app.include_router(reports_router)
 
 
 
@@ -425,10 +427,14 @@ def export_session_data(
             content, mime_type, filename = export_engine.export_jupyter_notebook(db, session_id)
         elif fmt in ("report", "markdown", "md"):
             content, mime_type, filename = export_engine.export_executive_report(db, session_id)
+        elif fmt in ("pptx", "deck", "powerpoint", "slides"):
+            content, mime_type, filename = export_engine.export_deck_presentation(db, session_id)
+        elif fmt in ("pdf", "brief"):
+            content, mime_type, filename = export_engine.export_pdf_brief(db, session_id)
         else:
             raise HTTPException(
                 status_code=400,
-                detail=f"Unknown export format: '{export_format}'. Supported: csv, parquet, xlsx, ipynb, report.",
+                detail=f"Unknown export format: '{export_format}'. Supported: csv, parquet, xlsx, ipynb, report, pptx, pdf.",
             )
 
         return Response(

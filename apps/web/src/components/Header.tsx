@@ -4,6 +4,8 @@ interface HeaderProps {
   sessionTitle?: string;
   isCollapsed?: boolean;
   onUploadClick?: () => void;
+  onExportClick?: (format: string) => void;
+  onPresentClick?: () => void;
   activeDataFrameVersion?: string;
 }
 
@@ -11,6 +13,8 @@ export const Header: React.FC<HeaderProps> = ({
   sessionTitle = "Q3 Revenue Cohort Analysis",
   isCollapsed = false,
   onUploadClick,
+  onExportClick,
+  onPresentClick,
   activeDataFrameVersion = "df_v0",
 }) => {
   return (
@@ -51,6 +55,18 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <span className="material-symbols-outlined text-[16px]">upload_file</span>
             <span className="hidden sm:inline">Upload Data</span>
+          </button>
+        )}
+
+        {/* Executive Deck Trigger */}
+        {onPresentClick && (
+          <button
+            onClick={onPresentClick}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-400 border border-indigo-500/30 transition-all font-body-sm text-body-sm shadow-sm"
+            title="Open Executive Presentation Studio"
+          >
+            <span className="material-symbols-outlined text-[16px]">co_present</span>
+            <span className="hidden sm:inline">Deck Studio</span>
           </button>
         )}
 

@@ -271,6 +271,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
 
             <button
+              onClick={() => onTabChange("reports")}
+              className={`flex items-center gap-space-sm px-2.5 py-1.5 rounded-lg text-body-sm transition-colors text-left ${
+                currentTab === "reports"
+                  ? "bg-surface-container-high text-primary font-medium shadow-sm"
+                  : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+              }`}
+              title="Executive Reports & Presentation Studio"
+            >
+              <span className="material-symbols-outlined text-[18px] text-indigo-400 shrink-0">
+                co_present
+              </span>
+              {!isCollapsed && <span className="truncate">Executive Deck</span>}
+            </button>
+
+            <button
               onClick={() => onTabChange("history")}
               className={`flex items-center gap-space-sm px-2.5 py-1.5 rounded-lg text-body-sm transition-colors text-left ${
                 currentTab === "history"

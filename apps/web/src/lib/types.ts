@@ -347,4 +347,43 @@ export interface AutoMLTrainResponse {
   rows_trained: number;
 }
 
+// ---------------------------------------------------------------------------
+// Track C: Executive Reports & Presentation Studio Types
+// ---------------------------------------------------------------------------
+
+export interface DeckConfigRequest {
+  theme?: "dark" | "light" | "navy";
+  title?: string;
+  subtitle?: string;
+  author?: string;
+  include_slides?: string[];
+  ai_polish?: boolean;
+}
+
+export interface DeckSlidePreview {
+  slide_id: string;
+  slide_type: "title" | "hygiene" | "correlations" | "metrics" | "automl" | "summary";
+  title: string;
+  subtitle?: string;
+  bullet_points: string[];
+  metrics: Record<string, any>;
+  has_chart: boolean;
+  chart_type?: string;
+}
+
+export interface DeckPreviewResponse {
+  session_id: string;
+  title: string;
+  theme: string;
+  slides: DeckSlidePreview[];
+  total_slides: number;
+}
+
+export interface AIPolishResponse {
+  slide_id: string;
+  executive_summary: string;
+  polished_bullets: string[];
+  recommendations: string[];
+}
+
 

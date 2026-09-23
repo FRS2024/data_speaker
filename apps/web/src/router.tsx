@@ -22,6 +22,7 @@ import { FileUploadModal } from "./components/FileUploadModal";
 import { SqlPatchModal } from "./components/SqlPatchModal";
 import { SchemaMapper } from "./components/SchemaMapper";
 import { DiagnosticsStudio } from "./components/DiagnosticsStudio";
+import { ReportsStudio } from "./components/ReportsStudio";
 
 import { useChatStream } from "./hooks/useChatStream";
 import {
@@ -39,7 +40,7 @@ import { queryClient } from "./lib/queryClient";
 // Zod Search Parameters Schema for Type-Safe Navigation
 const searchSchema = z.object({
   session_id: z.string().optional(),
-  tab: z.enum(["canvas", "sql", "table", "charts", "history", "mapper", "diagnostics"]).optional().default("canvas"),
+  tab: z.enum(["canvas", "sql", "table", "charts", "history", "mapper", "diagnostics", "reports"]).optional().default("canvas"),
 });
 
 type SearchParams = z.infer<typeof searchSchema>;
@@ -210,6 +211,7 @@ const RootLayout: React.FC = () => {
           sessionTitle={sessionDetail?.title || "Q3 Revenue Cohort Analysis"}
           isCollapsed={isSidebarCollapsed}
           onUploadClick={() => setIsUploadModalOpen(true)}
+          onPresentClick={() => handleTabChange("reports")}
           activeDataFrameVersion={sessionDetail?.active_dataframe_version || "df_v0"}
         />
 
@@ -352,6 +354,10 @@ const RootLayout: React.FC = () => {
                 refetchDataset();
               }}
             />
+          )}
+
+          {activeTab === "reports" && activeSessionId && (
+            <ReportsStudio sessionId={activeSessionId} />
           )}
         </main>
       </div>

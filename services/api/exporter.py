@@ -354,6 +354,60 @@ class ExportEngine:
         filename = f"{clean_title}_executive_report.md"
         return content, "text/markdown", filename
 
+    def export_deck_presentation(
+        self,
+        db: Session,
+        session_id: str,
+        config: Optional[Any] = None,
+    ) -> Tuple[bytes, str, str]:
+        """
+        Generate a corporate PowerPoint (.pptx) presentation deck.
+        Returns: (file_bytes, mime_type, filename)
+        """
+        from services.api.deck_engine import deck_engine
+        from services.api.models import DeckConfigRequest
+
+        session_obj = session_service.get_session(db, session_id)
+        if not session_obj:
+            raise ValueError(f"Session '{session_id}' not found.")
+
+        cfg = config or DeckConfigRequest()
+        content = deck_engine.build_deck(db, session_id, cfg)
+        mime_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        base_title = session_obj.title.strip().replace(" ", "_").lower()
+        clean_title = "".join(c for c in base_title if c.isalnum() or c in ("_", "-")) or "deck"
+        filename = f"{clean_title}_presentation.pptx"
+        return content, mime_type, filename
+
+    def export_pdf_brief(
+        self,
+        db: Session,
+        session_id: str,
+        title: Optional[str] = None,
+        author: Optional[str] = None,
+    ) -> Tuple[bytes, str, str]:
+        """
+        Generate a polished executive PDF brief using ReportLab.
+        Returns: (file_bytes, mime_type, filename)
+        """
+        from services.api.pdf_engine import pdf_engine
+
+        session_obj = session_service.get_session(db, session_id)
+        if not session_obj:
+            raise ValueError(f"Session '{session_id}' not found.")
+
+        content = pdf_engine.build_pdf_report(
+            db,
+            session_id,
+            title=title or session_obj.title,
+            author=author or "Autonomous Data Analyst",
+        )
+        mime_type = "application/pdf"
+        base_title = session_obj.title.strip().replace(" ", "_").lower()
+        clean_title = "".join(c for c in base_title if c.isalnum() or c in ("_", "-")) or "brief"
+        filename = f"{clean_title}_brief.pdf"
+        return content, mime_type, filename
+
 
 # Global engine instance
 export_engine = ExportEngine()

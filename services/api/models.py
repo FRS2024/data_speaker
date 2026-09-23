@@ -621,3 +621,54 @@ class AutoMLTrainResponse(BaseModel):
     rows_trained: int
 
 
+# ============================================================================
+# Track C: Executive Report & Presentation Studio Models
+# ============================================================================
+
+class DeckConfigRequest(BaseModel):
+    theme: str = "dark"  # "dark", "light", "navy"
+    title: Optional[str] = None
+    subtitle: Optional[str] = None
+    author: Optional[str] = "data_speaker Autonomous Analyst"
+    include_slides: List[str] = [
+        "title",
+        "hygiene",
+        "correlations",
+        "metrics",
+        "automl",
+        "summary",
+    ]
+    ai_polish: bool = False
+
+
+class DeckSlidePreview(BaseModel):
+    slide_id: str
+    slide_type: str  # "title", "hygiene", "correlations", "metrics", "automl", "summary"
+    title: str
+    subtitle: Optional[str] = None
+    bullet_points: List[str] = []
+    metrics: Dict[str, Any] = {}
+    has_chart: bool = False
+    chart_type: Optional[str] = None
+
+
+class DeckPreviewResponse(BaseModel):
+    session_id: str
+    title: str
+    theme: str
+    slides: List[DeckSlidePreview]
+    total_slides: int
+
+
+class AIPolishRequest(BaseModel):
+    slide_id: Optional[str] = None
+    prompt_context: Optional[str] = None
+
+
+class AIPolishResponse(BaseModel):
+    slide_id: str
+    executive_summary: str
+    polished_bullets: List[str]
+    recommendations: List[str]
+
+

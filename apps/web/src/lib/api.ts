@@ -16,6 +16,9 @@ import {
   CorrelationMatrixResponse,
   AnomalyReportResponse,
   AutoMLTrainResponse,
+  DeckConfigRequest,
+  DeckPreviewResponse,
+  AIPolishResponse,
 } from "./types";
 
 export interface SessionListItem {
@@ -570,4 +573,92 @@ export const diagnosticsAnomaliesQueryOptions = (sessionId: string) =>
     queryFn: () => diagnosticsApi.getAnomalies(sessionId),
     staleTime: 60000,
   });
+
+// ---------------------------------------------------------------------------
+// Reports & Presentation Studio API (Track C)
+// ---------------------------------------------------------------------------
+
+export const reportsApi = {
+  async getDeckPreview(sessionId: string, theme: string = "dark"): Promise<DeckPreviewResponse> {
+    const res = await authFetch(`/api/v1/sessions/${sessionId}/reports/preview?theme=${theme}`);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "Failed to load deck preview");
+    }
+    return res.json();
+  },
+
+  async requestAIPolish(sessionId: string, slideId: string): Promise<AIPolishResponse> {
+    const res = await authFetch(`/api/v1/sessions/${sessionId}/reports/polish`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slide_id: slideId }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "Failed to generate AI executive polish");
+    }
+    return res.json();
+  },
+
+  async downloadDeckPptx(sessionId: string, config?: DeckConfigRequest): Promise<void> {
+    const tokens = getStoredTokens();
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (tokens?.access_token) {
+      headers["Authorization"] = `Bearer ${tokens.access_token}`;
+    }
+
+    const res = await fetch(`/api/v1/sessions/${sessionId}/reports/export/pptx`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(config || {}),
+    });
+    if (!res.ok) throw new Error("Failed to export PowerPoint presentation");
+
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${sessionId}_presentation.pptx`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  },
+
+  async downloadReportPdf(sessionId: string, title?: string): Promise<void> {
+    const tokens = getStoredTokens();
+    const headers: Record<string, string> = {};
+    if (tokens?.access_token) {
+      headers["Authorization"] = `Bearer ${tokens.access_token}`;
+    }
+
+    const params = new URLSearchParams();
+    if (title) params.set("title", title);
+
+    const res = await fetch(`/api/v1/sessions/${sessionId}/reports/export/pdf?${params.toString()}`, {
+      method: "POST",
+      headers,
+    });
+    if (!res.ok) throw new Error("Failed to export PDF brief");
+
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${sessionId}_brief.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  },
+};
+
+export const reportsPreviewQueryOptions = (sessionId: string, theme: string = "dark") =>
+  queryOptions({
+    queryKey: ["reports", "preview", sessionId, theme],
+    queryFn: () => reportsApi.getDeckPreview(sessionId, theme),
+    staleTime: 30000,
+  });
+
 
