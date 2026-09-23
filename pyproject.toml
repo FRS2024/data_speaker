@@ -28,6 +28,8 @@ dependencies = [
     "pyjwt>=2.8.0",
     "bcrypt>=4.1.0",
     "alembic>=1.13.0",
+    "scikit-learn>=1.4.0",
+    "scipy>=1.12.0",
 ]
 
 [tool.uv.workspace]

@@ -480,3 +480,144 @@ class InviteMemberRequest(BaseModel):
 class UpdateMemberRoleRequest(BaseModel):
     role: str  # "admin" | "analyst" | "viewer"
 
+
+# ---------------------------------------------------------------------------
+# Diagnostics & AutoML Schemas (Track B)
+# ---------------------------------------------------------------------------
+
+class HealthScoreBreakdown(BaseModel):
+    completeness_score: float
+    uniqueness_score: float
+    consistency_score: float
+    outlier_score: float
+    missing_cells: int
+    total_cells: int
+    duplicate_rows: int
+    total_rows: int
+
+
+class ColumnHealth(BaseModel):
+    name: str
+    dtype: str
+    missing_count: int
+    missing_ratio: float
+    unique_count: int
+    unique_ratio: float
+    outlier_count: int
+    score: float
+    status: str  # "excellent" | "good" | "fair" | "poor"
+
+
+class HygieneRecommendation(BaseModel):
+    id: str
+    category: str  # "missing_values" | "duplicates" | "outliers" | "constants" | "skewness"
+    severity: str  # "critical" | "warning" | "info"
+    column: Optional[str] = None
+    title: str
+    description: str
+    suggested_action: str
+    parameters: Dict[str, Any] = {}
+    python_code: str
+
+
+class DataHealthResponse(BaseModel):
+    session_id: str
+    overall_score: float
+    status: str  # "healthy" | "warning" | "critical"
+    breakdown: HealthScoreBreakdown
+    columns: List[ColumnHealth] = []
+    recommendations: List[HygieneRecommendation] = []
+
+
+class ApplyHygieneRequest(BaseModel):
+    recommendation_id: str
+    action: str  # "impute_mean" | "impute_median" | "impute_mode" | "drop_missing" | "drop_duplicates" | "clip_outliers" | "drop_column"
+    column: Optional[str] = None
+    parameters: Dict[str, Any] = {}
+
+
+class ApplyHygieneResponse(BaseModel):
+    status: str = "success"
+    session_id: str
+    checkpoint: CheckpointSummaryResponse
+    profile: DataFrameProfile
+    applied_code: str
+    message: str
+
+
+class CorrelationPair(BaseModel):
+    col1: str
+    col2: str
+    pearson: float
+    spearman: float
+    abs_pearson: float
+
+
+class CorrelationMatrixResponse(BaseModel):
+    session_id: str
+    columns: List[str]
+    pearson: List[List[float]]
+    spearman: List[List[float]]
+    top_correlations: List[CorrelationPair] = []
+
+
+class AnomalyAttribution(BaseModel):
+    column: str
+    value: Any
+    z_score: float
+
+
+class AnomalyRecord(BaseModel):
+    row_index: int
+    anomaly_score: float
+    is_outlier: bool
+    data: Dict[str, Any]
+    top_attributions: List[AnomalyAttribution] = []
+
+
+class AnomalyReportResponse(BaseModel):
+    session_id: str
+    total_rows: int
+    anomaly_count: int
+    anomaly_rate: float
+    features_analyzed: List[str] = []
+    top_anomalies: List[AnomalyRecord] = []
+
+
+class AutoMLTrainRequest(BaseModel):
+    target_column: str
+    problem_type: Optional[str] = None  # "classification" | "regression" | None
+    selected_features: Optional[List[str]] = None
+    max_rows: int = 10000
+
+
+class ModelBenchmarkResult(BaseModel):
+    model_name: str
+    display_name: str
+    is_best: bool = False
+    metrics: Dict[str, float]
+    training_time_ms: float
+
+
+class FeatureImportanceItem(BaseModel):
+    feature: str
+    importance: float
+
+
+class ConfusionMatrixData(BaseModel):
+    labels: List[str]
+    matrix: List[List[int]]
+
+
+class AutoMLTrainResponse(BaseModel):
+    session_id: str
+    target_column: str
+    problem_type: str  # "binary" | "multiclass" | "regression"
+    best_model: str
+    models: List[ModelBenchmarkResult]
+    feature_importances: List[FeatureImportanceItem]
+    confusion_matrix: Optional[ConfusionMatrixData] = None
+    generated_code: str
+    rows_trained: int
+
+

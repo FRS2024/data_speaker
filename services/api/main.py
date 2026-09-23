@@ -47,6 +47,7 @@ from services.api.models import (
 from services.api.profiler import clean_table_name
 from services.api.routers.auth import router as auth_router
 from services.api.routers.workspaces import router as workspaces_router
+from services.api.routers.diagnostics import router as diagnostics_router
 from services.api.session_service import DATA_DIR, SANDBOX_URL, session_service
 from services.api.sql_engine import duckdb_engine
 
@@ -74,9 +75,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount authentication and workspace management routers
+# Mount authentication, workspace, and diagnostics routers
 app.include_router(auth_router)
 app.include_router(workspaces_router)
+app.include_router(diagnostics_router)
+
 
 
 @app.get("/health", tags=["System"])

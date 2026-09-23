@@ -21,6 +21,7 @@ import { VersionHistoryView } from "./components/VersionHistoryView";
 import { FileUploadModal } from "./components/FileUploadModal";
 import { SqlPatchModal } from "./components/SqlPatchModal";
 import { SchemaMapper } from "./components/SchemaMapper";
+import { DiagnosticsStudio } from "./components/DiagnosticsStudio";
 
 import { useChatStream } from "./hooks/useChatStream";
 import {
@@ -38,7 +39,7 @@ import { queryClient } from "./lib/queryClient";
 // Zod Search Parameters Schema for Type-Safe Navigation
 const searchSchema = z.object({
   session_id: z.string().optional(),
-  tab: z.enum(["canvas", "sql", "table", "charts", "history", "mapper"]).optional().default("canvas"),
+  tab: z.enum(["canvas", "sql", "table", "charts", "history", "mapper", "diagnostics"]).optional().default("canvas"),
 });
 
 type SearchParams = z.infer<typeof searchSchema>;
@@ -339,6 +340,17 @@ const RootLayout: React.FC = () => {
               activeVersion={sessionDetail?.active_dataframe_version || "df_v0"}
               onRollback={handleRollback}
               isReverting={isReverting}
+            />
+          )}
+
+          {activeTab === "diagnostics" && activeSessionId && (
+            <DiagnosticsStudio
+              sessionId={activeSessionId}
+              onVersionCreated={() => {
+                refetchSchema();
+                refetchCheckpoints();
+                refetchDataset();
+              }}
             />
           )}
         </main>

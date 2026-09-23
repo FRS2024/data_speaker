@@ -663,6 +663,126 @@ class SessionService:
             "rows": records,
         }
 
+    def get_active_dataframe(
+        self,
+        db: Session,
+        session_id: str,
+        version_tag: Optional[str] = None,
+    ) -> Optional[pd.DataFrame]:
+        """Load the active DataFrame into pandas for diagnostics and AutoML."""
+        session_obj = self.get_session(db, session_id)
+        if not session_obj:
+            return None
+
+        target_version = version_tag or session_obj.active_dataframe_version or "df_v0"
+        session_dir = DATA_DIR / "sessions" / session_id
+        checkpoints_dir = session_dir / "checkpoints"
+        parquet_path = checkpoints_dir / f"{target_version}.parquet"
+
+        if parquet_path.exists():
+            try:
+                import polars as pl
+                return pl.read_parquet(parquet_path).to_pandas()
+            except Exception:
+                try:
+                    return pd.read_parquet(parquet_path)
+                except Exception:
+                    pass
+
+        files = db.exec(select(SessionFile).where(SessionFile.session_id == session_id)).all()
+        if not files:
+            return None
+        target_path = Path(files[0].storage_path)
+        if not target_path.exists():
+            return None
+
+        try:
+            table_dfs = read_file_to_dataframes(target_path, files[0].mime_type)
+            first_df = list(table_dfs.values())[0]
+            if hasattr(first_df, "to_pandas"):
+                return first_df.to_pandas()
+            return first_df
+        except Exception:
+            return None
+
+    async def apply_hygiene_remediation(
+        self,
+        db: Session,
+        session_id: str,
+        action: str,
+        column: Optional[str] = None,
+        parameters: Optional[Dict[str, Any]] = None,
+    ) -> Tuple[DataFrameCheckpoint, DataFrameProfile, str]:
+        """
+        Execute smart data hygiene remediation in sandbox, materialize a new versioned
+        checkpoint (df_vX), record audit ChatTurn, and refresh DuckDB catalog.
+        """
+        params = parameters or {}
+        code_lines = []
+
+        if action == "impute_median" and column:
+            code_lines.append(f"df['{column}'] = df['{column}'].fillna(df['{column}'].median())")
+        elif action == "impute_mean" and column:
+            code_lines.append(f"df['{column}'] = df['{column}'].fillna(df['{column}'].mean())")
+        elif action == "impute_mode" and column:
+            code_lines.append(
+                f"df['{column}'] = df['{column}'].fillna(df['{column}'].mode()[0] if not df['{column}'].mode().empty else 'Unknown')"
+            )
+        elif action == "drop_missing" and column:
+            code_lines.append(f"df = df.dropna(subset=['{column}']).reset_index(drop=True)")
+        elif action == "drop_column" and column:
+            code_lines.append(f"df = df.drop(columns=['{column}'])")
+        elif action == "drop_duplicates":
+            code_lines.append("df = df.drop_duplicates().reset_index(drop=True)")
+        elif action == "clip_outliers" and column:
+            lower = params.get("lower", 0)
+            upper = params.get("upper", 100)
+            code_lines.append(f"df['{column}'] = df['{column}'].clip(lower={lower}, upper={upper})")
+        elif action == "log_transform" and column:
+            code_lines.append("import numpy as np")
+            code_lines.append(f"df['{column}_log'] = np.log1p(df['{column}'])")
+        else:
+            raise ValueError(f"Unsupported hygiene action '{action}' on column '{column}'")
+
+        python_code = "\n".join(code_lines)
+
+        sandbox = self.get_or_create_sandbox_client(session_id)
+        exec_res = await asyncio.to_thread(sandbox.execute, python_code)
+        if exec_res.status != "success":
+            raise RuntimeError(f"Hygiene execution failed: {exec_res.stderr}")
+
+        summary = f"Smart Hygiene: {action} on {column or 'dataset'}"
+        checkpoint = await self.create_incremental_checkpoint(
+            db=db,
+            session_id=session_id,
+            operation_summary=summary,
+        )
+
+        if not checkpoint:
+            raise RuntimeError("Failed to create checkpoint after applying hygiene remediation.")
+
+        profile = checkpoint.get_profile()
+
+        # Record audit ChatTurn
+        audit_turn = ChatTurn(
+            session_id=session_id,
+            user_prompt=f"[Smart Hygiene] Applied {action} on {column or 'dataset'}",
+            generated_code=python_code,
+            stdout=f"Hygiene remediation applied successfully. Materialized version {checkpoint.version_tag}.",
+            status="success",
+        )
+        db.add(audit_turn)
+        db.commit()
+
+        # Refresh DuckDB catalog
+        try:
+            duckdb_engine.refresh_catalog(db, session_id)
+        except Exception:
+            pass
+
+        return checkpoint, profile, python_code
+
 
 # Global service instance
 session_service = SessionService()
+

@@ -256,6 +256,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
 
             <button
+              onClick={() => onTabChange("diagnostics")}
+              className={`flex items-center gap-space-sm px-2.5 py-1.5 rounded-lg text-body-sm transition-colors text-left ${
+                currentTab === "diagnostics"
+                  ? "bg-surface-container-high text-primary font-medium shadow-sm"
+                  : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+              }`}
+              title="Diagnostics & AutoML Studio"
+            >
+              <span className="material-symbols-outlined text-[18px] text-cyan-400 shrink-0">
+                stethoscope
+              </span>
+              {!isCollapsed && <span className="truncate">Diagnostics & ML</span>}
+            </button>
+
+            <button
               onClick={() => onTabChange("history")}
               className={`flex items-center gap-space-sm px-2.5 py-1.5 rounded-lg text-body-sm transition-colors text-left ${
                 currentTab === "history"
