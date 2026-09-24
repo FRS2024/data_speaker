@@ -303,6 +303,7 @@ def generate_loader_code(
             f"import pandas as pd\n"
             f"{table_name} = pd.read_parquet(r'{target_path}')\n"
             f"df = {table_name}\n"
+            f"df_active = df\n"
         )
 
     if suffix in [".csv", ".tsv", ".txt", ".tab"]:
@@ -311,6 +312,7 @@ def generate_loader_code(
             f"import pandas as pd\n"
             f"{table_name} = pd.read_csv(r'{target_path}', sep={repr(delimiter)}, encoding={repr(encoding)})\n"
             f"df = {table_name}\n"
+            f"df_active = df\n"
         )
 
     if suffix in [".xlsx", ".xls"]:
@@ -318,6 +320,7 @@ def generate_loader_code(
             f"import pandas as pd\n"
             f"{table_name} = pd.read_excel(r'{target_path}')\n"
             f"df = {table_name}\n"
+            f"df_active = df\n"
         )
 
     if suffix in [".json", ".jsonl", ".ndjson"]:
@@ -328,6 +331,7 @@ def generate_loader_code(
             f"except Exception:\n"
             f"    {table_name} = pd.read_json(r'{target_path}')\n"
             f"df = {table_name}\n"
+            f"df_active = df\n"
         )
 
     if suffix in [".db", ".sqlite", ".sqlite3"]:
@@ -341,6 +345,7 @@ def generate_loader_code(
             f"    for _t in _tables:\n"
             f"        globals()[f'df_{{_t}}'] = pd.read_sql_query(f'SELECT * FROM \"{{_t}}\"', _conn)\n"
             f"    df = {table_name}\n"
+            f"    df_active = df\n"
             f"_conn.close()\n"
         )
 
@@ -349,6 +354,7 @@ def generate_loader_code(
         f"import pandas as pd\n"
         f"{table_name} = pd.read_csv(r'{target_path}', on_bad_lines='skip')\n"
         f"df = {table_name}\n"
+        f"df_active = df\n"
     )
 
 

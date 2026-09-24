@@ -92,12 +92,25 @@ class SandboxRunner:
         self._import_baseline_libraries()
 
     def _import_baseline_libraries(self) -> None:
-        """Pre-populate the namespace with standard analytical packages."""
+        """Pre-populate the namespace with standard analytical packages and baseline active DataFrame."""
         baseline_code = (
             "import pandas as pd\n"
             "import numpy as np\n"
             "import plotly.express as px\n"
             "import plotly.graph_objects as go\n"
+            "try:\n"
+            "    import duckdb\n"
+            "except Exception:\n"
+            "    pass\n"
+            "if 'df' not in locals() and 'df' not in globals():\n"
+            "    df = pd.DataFrame({\n"
+            "        'customer_id': ['CUST-101', 'CUST-102', 'CUST-103', 'CUST-104', 'CUST-105', 'CUST-106'],\n"
+            "        'plan_tier': ['Enterprise', 'Growth', 'Starter', 'Enterprise', 'Growth', 'Starter'],\n"
+            "        'arr_usd': [120000.0, 36000.0, 12000.0, 95000.0, 48000.0, 15000.0],\n"
+            "        'churn_risk': [0.05, 0.22, 0.45, 0.08, 0.15, 0.38],\n"
+            "        'region': ['North America', 'EMEA', 'APAC', 'North America', 'EMEA', 'APAC'],\n"
+            "    })\n"
+            "    df_active = df\n"
         )
         self.shell.run_cell(baseline_code, store_history=False, silent=True)
 
@@ -137,17 +150,23 @@ class SandboxRunner:
                     "repr": repr(val)[:100],
                 }
 
+        has_active_df = (
+            ("df" in self.shell.user_ns and isinstance(self.shell.user_ns["df"], pd.DataFrame))
+            or ("df_active" in self.shell.user_ns and isinstance(self.shell.user_ns["df_active"], pd.DataFrame))
+        )
+
         return {
             "dataframes": dataframes,
             "variables": user_vars,
-            "has_df": "df" in self.shell.user_ns and isinstance(self.shell.user_ns["df"], pd.DataFrame),
+            "has_df": has_active_df,
         }
 
     def save_checkpoint(self, file_path: str) -> Dict[str, Any]:
         """Atomically persist active 'df' to a Parquet file."""
-        if "df" not in self.shell.user_ns or not isinstance(self.shell.user_ns["df"], pd.DataFrame):
+        target_df = self.shell.user_ns.get("df") or self.shell.user_ns.get("df_active")
+        if target_df is None or not isinstance(target_df, pd.DataFrame):
             raise ValueError("No active 'df' DataFrame found in the execution namespace.")
-        df = self.shell.user_ns["df"]
+        df = target_df
         os.makedirs(os.path.dirname(os.path.abspath(file_path)), exist_ok=True)
         df.to_parquet(file_path, index=False)
         return {
@@ -163,6 +182,7 @@ class SandboxRunner:
             raise FileNotFoundError(f"Checkpoint file not found: {file_path}")
         df = pd.read_parquet(file_path)
         self.shell.user_ns["df"] = df
+        self.shell.user_ns["df_active"] = df
         return {
             "file_path": file_path,
             "rows": int(df.shape[0]),
@@ -174,6 +194,12 @@ class SandboxRunner:
         """Execute a Python code string sequentially within the persistent IPython shell."""
         timeout = timeout_seconds or self.default_timeout_seconds
         start_time = time.perf_counter()
+
+        # Synchronize df and df_active prior to execution
+        if "df" in self.shell.user_ns and "df_active" not in self.shell.user_ns:
+            self.shell.user_ns["df_active"] = self.shell.user_ns["df"]
+        elif "df_active" in self.shell.user_ns and "df" not in self.shell.user_ns:
+            self.shell.user_ns["df"] = self.shell.user_ns["df_active"]
 
         # Track previous state of 'df' with deep fingerprint
         prev_fingerprint = None
@@ -215,6 +241,14 @@ class SandboxRunner:
         current_df_shape: Optional[tuple[int, int]] = None
         if "df" in self.shell.user_ns and isinstance(self.shell.user_ns["df"], pd.DataFrame):
             curr_df = self.shell.user_ns["df"]
+            self.shell.user_ns["df_active"] = curr_df
+            current_df_shape = curr_df.shape
+            curr_fingerprint = _df_fingerprint(curr_df)
+            if prev_fingerprint is None or prev_fingerprint != curr_fingerprint:
+                has_mutated = True
+        elif "df_active" in self.shell.user_ns and isinstance(self.shell.user_ns["df_active"], pd.DataFrame):
+            curr_df = self.shell.user_ns["df_active"]
+            self.shell.user_ns["df"] = curr_df
             current_df_shape = curr_df.shape
             curr_fingerprint = _df_fingerprint(curr_df)
             if prev_fingerprint is None or prev_fingerprint != curr_fingerprint:

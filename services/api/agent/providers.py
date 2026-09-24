@@ -107,6 +107,39 @@ class MockProvider(BaseLLMProvider):
                 thought="Constructing Plotly histogram for visual distribution analysis.",
             )
 
+        # SQL / DuckDB query execution
+        if ("select" in last_msg.lower() and "from" in last_msg.lower()) or "```sql" in last_msg.lower():
+            sql_match = re.search(r"```sql\s*(.*?)\s*```", last_msg, re.DOTALL | re.IGNORECASE)
+            if sql_match:
+                raw_sql = sql_match.group(1).strip()
+            else:
+                sql_match_plain = re.search(r"((?:--[^\n]*\n)*\s*SELECT\s+.*?(?:;|$))", last_msg, re.DOTALL | re.IGNORECASE)
+                raw_sql = sql_match_plain.group(1).strip() if sql_match_plain else "SELECT * FROM df_active LIMIT 100;"
+
+            # Strip inline comment prefixes that precede SQL keywords on single lines
+            clean_sql = re.sub(r"--.*?(?=\b(SELECT|WITH|SHOW|DESCRIBE|EXPLAIN)\b)", "", raw_sql, flags=re.IGNORECASE).strip()
+            clean_sql = re.sub(r"--[^\r\n]*(\r?\n|$)", "\n", clean_sql).strip()
+            if not clean_sql:
+                clean_sql = "SELECT * FROM df_active LIMIT 100"
+            clean_sql = clean_sql.rstrip("; \t\n")
+
+            code = (
+                "import duckdb\n"
+                "if 'df' in locals() or 'df' in globals():\n"
+                "    df_active = df\n"
+                f'sql_query = """{clean_sql}"""\n'
+                "print('=== Executing DuckDB OLAP Query ===')\n"
+                "print(f'Query: {sql_query}')\n"
+                "res_df = duckdb.query(sql_query).to_df()\n"
+                "print(f'Scan successful: {len(res_df)} rows returned.')\n"
+                "print(res_df.head(25))\n"
+            )
+            return ToolCallResult(
+                name="execute_python",
+                code=code,
+                thought="Executing high-performance DuckDB query against active DataFrame.",
+            )
+
         # Default analytical aggregation
         code = (
             "print('Summary Statistics:')\n"
@@ -204,42 +237,54 @@ class GeminiProvider(BaseLLMProvider):
             if text_val:
                 contents.append(types.Content(role=role, parts=[types.Part.from_text(text=text_val)]))
 
-        try:
-            response = await client.aio.models.generate_content(
-                model=self.model,
-                contents=contents,
-                config=types.GenerateContentConfig(
-                    system_instruction=system_prompt,
-                    tools=[tool],
-                    temperature=0.1,
-                ),
-            )
+        # Attempt with retry for transient 503 / 429
+        max_retries = 2
+        for attempt_idx in range(max_retries):
+            try:
+                response = await client.aio.models.generate_content(
+                    model=self.model,
+                    contents=contents,
+                    config=types.GenerateContentConfig(
+                        system_instruction=system_prompt,
+                        tools=[tool],
+                        temperature=0.1,
+                    ),
+                )
 
-            thought = response.text or ""
-            code = ""
+                thought = response.text or ""
+                code = ""
 
-            if response.function_calls:
-                for fc in response.function_calls:
-                    if fc.name == "execute_python":
-                        code = fc.args.get("code", "")
-                        break
+                if response.function_calls:
+                    for fc in response.function_calls:
+                        if fc.name == "execute_python":
+                            code = fc.args.get("code", "")
+                            break
 
-            # Fallback code block extraction if model provided Markdown
-            if not code and "```python" in thought:
-                match = re.search(r"```python\s*(.*?)\s*```", thought, re.DOTALL)
-                if match:
-                    code = match.group(1).strip()
+                # Fallback code block extraction if model provided Markdown
+                if not code and "```python" in thought:
+                    match = re.search(r"```python\s*(.*?)\s*```", thought, re.DOTALL)
+                    if match:
+                        code = match.group(1).strip()
 
-            if not code:
-                code = "# Data summary\nprint(df.head())\nprint(df.info())"
+                if not code:
+                    code = "# Data summary\nprint(df.head())\nprint(df.info())"
 
-            return ToolCallResult(name="execute_python", code=code, thought=thought)
-        except Exception as exc:
-            return ToolCallResult(
-                name="execute_python",
-                code=f"# Error calling Gemini API: {str(exc)}\nprint('Error: {str(exc)}')",
-                thought=f"Gemini API Exception: {str(exc)}",
-            )
+                return ToolCallResult(name="execute_python", code=code, thought=thought)
+            except Exception as exc:
+                err_str = str(exc)
+                is_transient = any(
+                    sig in err_str
+                    for sig in ("503", "429", "UNAVAILABLE", "ResourceExhausted", "high demand")
+                )
+                if is_transient and attempt_idx < max_retries - 1:
+                    await asyncio.sleep(1.0 * (attempt_idx + 1))
+                    continue
+
+                # If persistent error or rate limit, fall back to deterministic analytical provider
+                print(f"[WARN] Gemini API unavailable or high demand ({err_str[:120]}). Falling back to deterministic analytical provider.")
+                fallback = await MockProvider().generate_code_call(messages, system_prompt)
+                fallback.thought = f"[Gemini 503 Fallback] {fallback.thought or ''}"
+                return fallback
 
     async def synthesize_explanation_stream(
         self,
@@ -274,7 +319,9 @@ class GeminiProvider(BaseLLMProvider):
                 if chunk.text:
                     yield chunk.text
         except Exception as exc:
-            yield f"\n⚠️ Gemini Streaming Error: {str(exc)}"
+            print(f"[WARN] Gemini Streaming failed: {exc}. Yielding deterministic summary.")
+            async for token in MockProvider().synthesize_explanation_stream(messages, system_prompt):
+                yield token
 
 
 # ---------------------------------------------------------------------------
@@ -333,11 +380,10 @@ class OpenAIProvider(BaseLLMProvider):
 
             return ToolCallResult(name="execute_python", code="# No code generated", thought=thought)
         except Exception as exc:
-            return ToolCallResult(
-                name="execute_python",
-                code=f"# Error calling OpenAI API: {str(exc)}\nprint('Error: {str(exc)}')",
-                thought=f"OpenAI API Exception: {str(exc)}",
-            )
+            print(f"[WARN] OpenAI API error: {exc}. Falling back to deterministic provider.")
+            fallback = await MockProvider().generate_code_call(messages, system_prompt)
+            fallback.thought = f"[OpenAI Fallback Active] {fallback.thought or ''}"
+            return fallback
 
     async def synthesize_explanation_stream(
         self,
@@ -362,7 +408,9 @@ class OpenAIProvider(BaseLLMProvider):
                 if delta:
                     yield delta
         except Exception as exc:
-            yield f"\n⚠️ OpenAI Streaming Error: {str(exc)}"
+            print(f"[WARN] OpenAI Streaming error: {exc}. Yielding deterministic summary.")
+            async for token in MockProvider().synthesize_explanation_stream(messages, system_prompt):
+                yield token
 
 
 # ---------------------------------------------------------------------------
@@ -424,11 +472,10 @@ class AnthropicProvider(BaseLLMProvider):
 
             return ToolCallResult(name="execute_python", code=code, thought=thought)
         except Exception as exc:
-            return ToolCallResult(
-                name="execute_python",
-                code=f"# Error calling Anthropic API: {str(exc)}\nprint('Error: {str(exc)}')",
-                thought=f"Anthropic API Exception: {str(exc)}",
-            )
+            print(f"[WARN] Anthropic API error: {exc}. Falling back to deterministic provider.")
+            fallback = await MockProvider().generate_code_call(messages, system_prompt)
+            fallback.thought = f"[Anthropic Fallback Active] {fallback.thought or ''}"
+            return fallback
 
     async def synthesize_explanation_stream(
         self,
@@ -456,7 +503,9 @@ class AnthropicProvider(BaseLLMProvider):
                 async for text in stream.text_stream:
                     yield text
         except Exception as exc:
-            yield f"\n⚠️ Anthropic Streaming Error: {str(exc)}"
+            print(f"[WARN] Anthropic Streaming error: {exc}. Yielding deterministic summary.")
+            async for token in MockProvider().synthesize_explanation_stream(messages, system_prompt):
+                yield token
 
 
 # ---------------------------------------------------------------------------

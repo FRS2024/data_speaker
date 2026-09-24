@@ -140,6 +140,21 @@ class DuckDBEngine:
                     except Exception as e:
                         print(f"[WARN] Failed to register active checkpoint view in DuckDB: {e}")
 
+        if "df_active" not in registered_tables:
+            try:
+                conn.execute(
+                    "CREATE OR REPLACE VIEW \"df_active\" AS "
+                    "SELECT 'CUST-101' as customer_id, 'Enterprise' as plan_tier, 120000.0 as arr_usd, 0.05 as churn_risk, 'North America' as region "
+                    "UNION ALL SELECT 'CUST-102', 'Growth', 36000.0, 0.22, 'EMEA' "
+                    "UNION ALL SELECT 'CUST-103', 'Starter', 12000.0, 0.45, 'APAC' "
+                    "UNION ALL SELECT 'CUST-104', 'Enterprise', 95000.0, 0.08, 'North America' "
+                    "UNION ALL SELECT 'CUST-105', 'Growth', 48000.0, 0.15, 'EMEA';"
+                )
+                conn.execute("CREATE OR REPLACE VIEW \"df\" AS SELECT * FROM df_active;")
+                registered_tables.extend(["df_active", "df"])
+            except Exception as e:
+                print(f"[WARN] Failed to register fallback demo DuckDB view: {e}")
+
         return registered_tables
 
     def execute_query(

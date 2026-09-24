@@ -297,6 +297,63 @@ class SessionService:
         db.refresh(checkpoint_record)
         return checkpoint_record
 
+    async def ensure_sandbox_hydrated(
+        self,
+        db: Session,
+        session_id: str,
+        sandbox: BaseSandboxClient,
+    ) -> None:
+        """
+        Verify that the sandbox kernel has an active dataset loaded in memory.
+        If empty, rehydrates from the session's active parquet checkpoint or primary session file.
+        """
+        try:
+            state = sandbox.get_state()
+            if state.get("has_df"):
+                return
+        except Exception as e:
+            print(f"[WARN] Failed to read sandbox state for hydration check: {e}")
+
+        # Try to rehydrate from active checkpoint
+        session_obj = self.get_session(db, session_id)
+        if session_obj:
+            active_version = session_obj.active_dataframe_version or "df_v0"
+            checkpoint = db.exec(
+                select(DataFrameCheckpoint)
+                .where(
+                    DataFrameCheckpoint.session_id == session_id,
+                    DataFrameCheckpoint.version_tag == active_version,
+                )
+            ).first()
+
+            if checkpoint and checkpoint.parquet_storage_path:
+                ckpt_path = Path(checkpoint.parquet_storage_path).resolve()
+                if ckpt_path.exists():
+                    container_path = self.resolve_container_path(ckpt_path)
+                    restore_code = (
+                        f"import pandas as pd\n"
+                        f"df = pd.read_parquet(r'{container_path}')\n"
+                        f"df_active = df\n"
+                    )
+                    await asyncio.to_thread(sandbox.execute, restore_code)
+                    return
+
+            # If no checkpoint, check if session has uploaded files
+            files = db.exec(
+                select(SessionFile).where(SessionFile.session_id == session_id)
+            ).all()
+            if files:
+                first_file = files[0]
+                fpath = Path(first_file.storage_path).resolve()
+                if fpath.exists():
+                    c_path = self.resolve_container_path(fpath)
+                    loader_code = generate_loader_code(
+                        file_path=fpath,
+                        table_name="df_data",
+                        container_mount_path=c_path,
+                    )
+                    await asyncio.to_thread(sandbox.execute, loader_code)
+
     async def execute_code(
         self,
         db: Session,
@@ -314,6 +371,7 @@ class SessionService:
             raise ValueError(f"Session '{session_id}' not found.")
 
         sandbox = self.get_or_create_sandbox_client(session_id)
+        await self.ensure_sandbox_hydrated(db, session_id, sandbox)
         exec_res = await asyncio.to_thread(sandbox.execute, code, timeout_seconds=timeout)
 
         # Record ChatTurn in DB
@@ -383,7 +441,7 @@ class SessionService:
         try:
             await asyncio.to_thread(sandbox.restore_checkpoint, container_path)
         except Exception:
-            restore_code = f"import pandas as pd\ndf = pd.read_parquet('{container_path}')"
+            restore_code = f"import pandas as pd\ndf = pd.read_parquet(r'{container_path}')\ndf_active = df\n"
             res = await asyncio.to_thread(sandbox.execute, restore_code)
             if res.status != "success":
                 raise RuntimeError(f"Failed to restore checkpoint in sandbox: {res.stderr}")

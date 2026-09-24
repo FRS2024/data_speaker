@@ -146,3 +146,63 @@ def test_chat_stream_sse_events(session_with_data: str):
     assert turn_complete_event["turn_id"].startswith("trn_")
     assert turn_complete_event["duration_ms"] > 0
     assert turn_complete_event["reflexion_count"] == 0
+
+
+def test_chat_sql_olap_query(session_with_data: str):
+    """Test SQL query execution through chat interface with DuckDB scanning df_active."""
+    chat_payload = {
+        "prompt": "Execute SQL and optimize scan: ```sql -- Direct DuckDB & BigQuery OLAP Query SELECT * FROM df_active LIMIT 100; ```",
+        "stream": False,
+        "provider": "mock",
+    }
+    res = client.post(f"/api/v1/sessions/{session_with_data}/chat", json=chat_payload)
+    assert res.status_code == 200
+    data = res.json()
+
+    assert data["status"] == "success"
+    assert "duckdb" in data["code"].lower()
+    assert "Executing DuckDB OLAP Query" in data["stdout"]
+    assert "Scan successful" in data["stdout"]
+    assert data["reflexion_count"] == 0
+
+
+@pytest.mark.asyncio
+async def test_gemini_provider_503_fallback():
+    """Verify GeminiProvider falls back to MockProvider when 503 UNAVAILABLE is raised."""
+    from unittest.mock import AsyncMock, patch
+    from services.api.agent.providers import GeminiProvider
+
+    provider = GeminiProvider(api_key="test_fake_gemini_key")
+    with patch.object(provider, "_get_client") as mock_client_factory:
+        mock_client = AsyncMock()
+        mock_client.aio.models.generate_content.side_effect = Exception(
+            "503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand.'}}"
+        )
+        mock_client_factory.return_value = mock_client
+
+        messages = [{"role": "user", "content": "SELECT * FROM df_active LIMIT 10"}]
+        system_prompt = "You are an autonomous AI analyst."
+
+        result = await provider.generate_code_call(messages, system_prompt)
+        assert result.name == "execute_python"
+        # Must NOT contain raw unescaped print('Error: 503 ...') that causes SyntaxError
+        assert "SyntaxError" not in result.code
+        assert "print('Error: 503" not in result.code
+        assert "duckdb" in result.code or "print(" in result.code
+
+
+def test_fresh_session_no_upload_has_baseline_df():
+    """Verify code execution in a fresh session with no uploaded file has df and df_active available."""
+    sess_res = client.post("/api/v1/sessions", json={"title": "Fresh Empty Session"})
+    session_id = sess_res.json()["session_id"]
+
+    exec_res = client.post(
+        f"/api/v1/sessions/{session_id}/execute",
+        json={"code": "print('df len:', len(df)); print('df_active cols:', list(df_active.columns))"},
+    )
+    assert exec_res.status_code == 200
+    data = exec_res.json()
+    assert data["status"] == "success"
+    assert "df len:" in data["stdout"]
+    assert "customer_id" in data["stdout"]
+
