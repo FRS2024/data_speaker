@@ -1,8 +1,9 @@
 [project]
 name = "data-speaker"
 version = "0.1.0"
-description = "Conversational Data Analysis Platform"
-readme = "project_overview.md"
+description = "Conversational Data Analysis Platform (Open-Source Julius AI Alternative)"
+readme = "README.md"
+license = { text = "MIT" }
 requires-python = ">=3.11,<3.13"
 dependencies = [
     "pydantic>=2.7.0",

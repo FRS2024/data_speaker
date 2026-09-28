@@ -42,9 +42,9 @@
     "semantic_hash": ""
   },
   "pyproject.toml": {
-    "mtime": 1790193675.1875987,
-    "seen": 1790195031.8217204,
-    "ast_hash": "9d1ce93284a882c82f547048e2b7979c",
+    "mtime": 1790609787.294481,
+    "seen": 1790609920.3998866,
+    "ast_hash": "209cfefb935dbd3427a3ce84956f9d5d",
     "semantic_hash": ""
   },
   "services/api/__init__.py": {
@@ -795,6 +795,12 @@
     "mtime": 1790202900.5524328,
     "seen": 1790202972.254753,
     "ast_hash": "ecf9a3611136930f5b6835b668f273c8",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1790609753.0925186,
+    "seen": 1790609920.3998866,
+    "ast_hash": "662630bf54dc9db4755b3d0b18d35b5c",
     "semantic_hash": ""
   }
 }
